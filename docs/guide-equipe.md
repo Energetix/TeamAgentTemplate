@@ -2,25 +2,50 @@
 
 ## Périmètre
 
-Cette première version implémente uniquement Maxime dans GitHub Copilot pour VS Code. Elle ne crée pas les six autres agents et ne déploie aucun service Azure.
+Cette version implémente Maxime, le sous-agent UMLCreator et Antoine dans GitHub Copilot pour VS Code. Elle ne crée pas les cinq autres agents et ne déploie aucun service Azure.
 
 | Agent | Responsabilité | Statut |
 | --- | --- | --- |
 | Maxime | Clarifier le besoin métier et rédiger les PBI ADO de type Support Request | Implémenté ; lectures, création initiale, conversion et commentaires vérifiés le 2026-10-20 |
+| UMLCreator | Produire des diagrammes UML en Mermaid pour l'agent principal | Configuré ; invocation depuis VS Code à vérifier |
 | Simone | Concevoir l'expérience et les interfaces utilisateur | Prévu, non implémenté |
 | Joao | Définir l'architecture et les décisions techniques | Prévu, non implémenté |
 | Sébastien | Implémenter les fonctionnalités FullStack | Prévu, non implémenté |
-| Antoine | Analyser les risques et exigences de sécurité | Prévu, non implémenté |
+| Antoine | Analyser les risques et exigences de sécurité | Configuré : revue, rapport `SECURITY_REVIEW.MD` et corrections locales après validation humaine explicite |
 | Anne-Cécile | Définir et exécuter les tests, relever les anomalies | Prévu, non implémenté |
 | Vincent | Finaliser les livrables et la documentation | Prévu, non implémenté |
 
-Les frontières détaillées des futurs agents restent à valider. Aucun relais automatique n'est configuré.
+Les frontières détaillées de Simone, Joao, Sébastien, Anne-Cécile et Vincent restent à valider. Aucun relais automatique n'est configuré entre les agents principaux.
 
-Un sous-agent dédié aux diagrammes UML en Mermaid est prévu, mais son nom, ses outils et son invocation ne sont pas encore configurés. Maxime ne produit pas ces diagrammes et ne prétend pas les déléguer à un agent inexistant. Les maquettes d'écran ne sont mentionnées dans ses tickets que lorsqu'elles sont fournies dans le besoin initial.
+`Antoine` effectue une revue statique en lecture seule du code, des dépendances, de l'IaC et de la configuration pertinente. Il consulte uniquement les pages publiques officielles OWASP utiles à la revue et n'envoie aucun contenu du dépôt vers un service externe. Il utilise OWASP Top 10:2025 comme cadre de sensibilisation pour les risques Web, en considérant seulement les catégories applicables et sans en faire une checklist exhaustive ou une certification. Il restitue des constats étayés, leur sévérité et leur niveau de confiance, puis recommande des corrections sans modifier le code ni tenter d'exploiter une vulnérabilité. Pour les périmètres API ou LLM, il signale que ce Top 10 ne couvre pas à lui seul les risques spécialisés. Il ne prétend pas certifier l'absence de risque.
+
+Par défaut, les revues rattachées au dépôt créent ou actualisent uniquement `SECURITY_REVIEW.MD` à la racine, avec ce nom exact. Antoine relit le rapport existant et préserve les notes humaines et résultats non réexaminés ; une revue partielle n'efface pas les conclusions des autres périmètres. Il n'y copie aucun secret, donnée personnelle ou contenu métier sensible, ne crée aucun commit et vérifie le fichier après écriture. L'accès de l'outil `edit` n'est pas techniquement limité aux fichiers autorisés : cette restriction reste une consigne. Les consultations métier par Maxime ne déclenchent aucune écriture de rapport ni correction.
+
+### Corrections après validation humaine
+
+Antoine peut appliquer des recommandations locales après présentation et validation humaine explicite d'un plan précisant les constats, fichiers ciblés, modifications, impacts et vérifications nécessaires. Une demande de revue, un rapport ou l'accord d'un autre agent ne suffit pas. En délégation, l'appelant doit transmettre cette validation et son périmètre. Tout élargissement nécessite une nouvelle validation.
+
+Il préserve les contributions existantes et actualise le rapport avec les modifications, vérifications et risques résiduels. Il reste sans terminal, exécution de tests, scanner, déploiement ou accès ADO. Les tests doivent être exécutés par le responsable humain ou un agent autorisé ; une correction seulement relue statiquement reste indiquée comme en attente de validation d'exécution. Les réglages de permissions ADO ou de protections VS Code restent des actions du responsable humain : modifier les consignes ne crée pas un contrôle technique.
+
+Pour une code review sécurité, Antoine tient compte des configurations, intégrations CI et rapports locaux de SonarQube/SonarCloud et des autres outils de validation présents. Son rapport distingue les outils configurés des résultats réellement disponibles, indique leurs sources, leur actualité connue et les limites de couverture (exclusions, règles désactivées, rapports absents ou anciens). Les alertes de qualité ou Security Hotspots ne deviennent pas automatiquement des vulnérabilités : Antoine recoupe les éléments et regroupe les doublons. Il ne lance aucun scanner et n'accède pas aux tableaux de bord distants ; un export expurgé peut être fourni si nécessaire.
+
+Le sous-agent `UMLCreator` produit des diagrammes UML en Mermaid lorsqu'il est sollicité directement ou par un agent autorisé. Il est configuré en lecture seule et ne modifie ni ticket ni fichier : l'agent qui l'a sollicité relit et insère le résultat dans un livrable Markdown adapté. Maxime n'est pas autorisé à déléguer à UMLCreator pour la rédaction ou l'affinage des PBI ADO : les tickets ne rendant pas Mermaid, il décrit les flux en texte clair et ne publie pas de blocs de source Mermaid. Le futur agent Joao pourra être autorisé à utiliser UMLCreator pour un diagramme d'architecture destiné à `ARCHITECTURE.md`. Un agent principal doit autoriser explicitement UMLCreator dans sa liste `agents`. Le modèle de UMLCreator n'est pas fixé tant que son libellé exact n'a pas été vérifié dans VS Code. Les maquettes d'écran ne sont mentionnées dans les tickets de Maxime que lorsqu'elles sont fournies dans le besoin initial.
+
+### Consultation d'Antoine par les autres agents
+
+Antoine est utilisable directement et comme sous-agent. L'intensité ci-dessous décrit la place de sa consultation, pas le niveau de sévérité des risques.
+
+| Appelant | Intervention d'Antoine | Configuration |
+| --- | --- | --- |
+| Maxime — ponctuelle | Questions et exigences de sécurité du besoin, critères proposés ; pas de revue du code ni de décision d'architecture | Autorisé : outil `agent`, `agents: [Antoine]` |
+| Joao — intermédiaire | Risques de la solution, frontières de confiance, flux et permissions | À câbler lors de la création de Joao : outil `agent` et `Antoine` dans `agents` |
+| Sébastien — prioritaire | Revue de sécurité des implémentations et relecture des corrections pertinentes | À câbler lors de la création de Sébastien : outil `agent` et `Antoine` dans `agents` |
+
+L'appelant transmet un contexte confirmé et un objectif délimité, puis relit l'avis avant de l'intégrer à son livrable. En revue, Antoine ne modifie que son rapport local ; toute correction suit la procédure de validation humaine ci-dessus, sans accès ADO ni délégation. Sa consultation ne vaut pas validation humaine et ne permet pas de contourner les limites de l'appelant.
 
 ## Installation dans un dépôt
 
-1. Intégrer `.github/copilot-instructions.md`, `.github/agents/maxime.agent.md`, `.vscode/mcp.json` et `docs/` au dépôt cible. Fusionner les configurations existantes au lieu de les écraser.
+1. Intégrer `.github/copilot-instructions.md`, `.github/agents/maxime.agent.md`, `.github/agents/umlcreator.agent.md`, `.github/agents/antoine.agent.md`, `.vscode/mcp.json` et `docs/` au dépôt cible. Fusionner les configurations existantes au lieu de les écraser.
 2. Ouvrir le dépôt dans une version à jour de VS Code avec GitHub Copilot Chat et les agents personnalisés activés. N'accorder la confiance à l'espace de travail qu'après vérification de son contenu.
 3. Ouvrir `.vscode/mcp.json` et utiliser l'action de démarrage du serveur `ado`, ou la commande VS Code `MCP: List Servers` puis choisir `ado` et le démarrer.
 4. Autoriser la connexion et s'authentifier dans le parcours Microsoft Entra proposé par VS Code, avec un compte ayant accès à l'organisation `leforem`. Ne communiquer aucun secret à l'agent.
@@ -28,6 +53,10 @@ Un sous-agent dédié aux diagrammes UML en Mermaid est prévu, mais son nom, se
 6. Vérifier que les outils `ado` sont visibles. Si nécessaire, actualiser la découverte des outils ou ouvrir une nouvelle conversation après démarrage du serveur.
 
 Le serveur distant officiel utilise `https://mcp.dev.azure.com/leforem`. Il ne nécessite ni installation Node.js, ni PAT dans le dépôt. L'organisation et le compte doivent être rattachés à Microsoft Entra ; l'accès peut dépendre des politiques et consentements du tenant Forem. Aucun compte ni consentement administrateur n'est créé par ce template.
+
+### Installer uniquement Antoine pour une code review sécurité
+
+Copier `.github/agents/antoine.agent.md` dans le dépôt cible et fusionner les règles communes de `.github/copilot-instructions.md` avec les instructions existantes, sans les écraser. Aucun serveur MCP ADO ni agent Maxime n'est nécessaire à son utilisation directe. Ouvrir le dépôt dans VS Code, sélectionner Antoine dans une nouvelle conversation et préciser le périmètre de revue. Les configurations et rapports de validation accessibles localement sont pris en compte sans ajouter de secret ni de connexion à une plateforme d'analyse.
 
 ## Vérification initiale sans écriture ADO
 
@@ -73,7 +102,7 @@ La configuration `X-MCP-Tools` expose uniquement les outils de lecture nécessai
 
 Certains outils regroupent plusieurs actions : par exemple `wit_backlog` inclut aussi le réordonnancement. Leur disponibilité ne vaut pas autorisation d'utiliser toutes leurs actions. Maxime ne les emploie qu'en lecture, sauf les écritures d'US et commentaires décrites dans son rôle. Pour une garantie forte, appliquer également les permissions ADO appropriées et les confirmations d'outils de VS Code ; ne pas activer une approbation globale sans examen.
 
-Les outils locaux `read` et `edit` ne sont pas limités techniquement à un dossier. Le périmètre documentaire de Maxime est donc une consigne, pas une sandbox. Il ne dispose ni du terminal ni de sous-agents.
+Les outils locaux `read` et `edit` ne sont pas limités techniquement à un dossier. Le périmètre documentaire de Maxime est donc une consigne, pas une sandbox. Il ne dispose pas du terminal ; sa délégation est limitée à Antoine pour les exigences de sécurité du besoin. La restriction de consultation Web d'Antoine aux sources OWASP est également une consigne, pas un filtrage technique des domaines.
 
 Le cache `docs/maxime/references.md` est destiné à être versionné uniquement dans un dépôt dont l'accès est compatible avec la confidentialité des informations Forem. Ne pas publier ce cache, les correspondances internes ou les paramètres d'organisation dans un dépôt public sans autorisation. Vérifier son contenu avant chaque commit ; l'agent ne réalise pas les commits.
 
@@ -89,4 +118,4 @@ Références officielles consultées pour la configuration : [serveur MCP distan
 
 ## Suites possibles
 
-Après validation du fonctionnement de Maxime, définir les entrées, livrables, outils et conditions de relais de Simone, puis de Joao. Les ajouter progressivement sans élargir les droits de Maxime.
+Vérifier dans une nouvelle conversation VS Code qu'Antoine est reconnu, appelable par Maxime sans écriture pour une question de sécurité du besoin, et que ses revues du dépôt n'écrivent que `SECURITY_REVIEW.MD` à la racine sans validation de correction. Vérifier séparément qu'un plan validé n'autorise que les corrections approuvées et leur suivi dans le rapport. Définir ensuite les entrées, livrables et outils des futurs agents ; câbler la consultation d'Antoine pour Joao et Sébastien selon le tableau ci-dessus. Ajouter `UMLCreator` à la liste `agents` de Joao uniquement si le relais de diagrammes d'architecture vers `ARCHITECTURE.md` est souhaité. Ne pas élargir les droits de Maxime au-delà de son rôle.

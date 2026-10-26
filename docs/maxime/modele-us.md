@@ -41,7 +41,7 @@ Ne pas publier dans la description la grille INVEST, une section « Critères d'
 Ces consignes ne sont pas des rubriques à copier dans le ticket :
 
 - Maquette d'écran : mentionner uniquement celle fournie dans le besoin initial. Sinon, ne pas créer la rubrique et ne pas demander de maquette par défaut.
-- UML : les diagrammes Mermaid relèveront d'un sous-agent dédié. Ne pas publier une section vide ou un livrable supposé ; référencer seulement un diagramme réellement disponible et validé. Aucun sous-agent UML n'est encore configuré.
+- Diagrammes : ADO n'affichant pas le rendu Mermaid dans les tickets, ne pas y publier de blocs source Mermaid et ne pas solliciter `UMLCreator` pour rédiger un PBI. Si un flux doit être expliqué dans le ticket, le décrire en texte clair, sans ajouter de rubrique « Diagrammes » vide. Les diagrammes Mermaid peuvent être produits séparément, hors du PBI, à la demande de l'utilisateur ou d'un agent autorisé.
 
 ## Contenu du champ Acceptance Criteria
 
