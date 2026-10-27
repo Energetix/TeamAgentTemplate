@@ -1,23 +1,63 @@
 # Template d'équipe d'agents Forem
 
+## Style commun
+
+Tous les agents écrivent dans un français simple, naturel et direct, comme un collègue qui explique un sujet à l'équipe. Cette règle couvre aussi les tickets, commentaires et livrables : phrases courtes, mots courants, paragraphes aérés, sans jargon inutile ni répétitions. Les détails utiles et les rubriques obligatoires restent présents. Les règles complètes figurent dans [.github/copilot-instructions.md](../.github/copilot-instructions.md).
+
 ## Périmètre
 
-Cette version implémente Maxime, le sous-agent UMLCreator et Antoine dans GitHub Copilot pour VS Code. Elle ne crée pas les cinq autres agents et ne déploie aucun service Azure.
+Cette version implémente Maxime, le sous-agent UMLCreator, Antoine et Joao dans GitHub Copilot pour VS Code. Elle ne crée pas les quatre autres agents et ne déploie aucun service Azure.
 
 | Agent | Responsabilité | Statut |
 | --- | --- | --- |
 | Maxime | Clarifier le besoin métier et rédiger les PBI ADO de type Support Request | Implémenté ; lectures, création initiale, conversion et commentaires vérifiés le 2026-10-20 |
 | UMLCreator | Produire des diagrammes UML en Mermaid pour l'agent principal | Configuré ; invocation depuis VS Code à vérifier |
 | Simone | Concevoir l'expérience et les interfaces utilisateur | Prévu, non implémenté |
-| Joao | Définir l'architecture et les décisions techniques | Prévu, non implémenté |
+| Joao | Documenter une architecture existante ou concevoir une architecture cible et ses décisions | Implémenté ; validation en nouvelle conversation VS Code à effectuer |
 | Sébastien | Implémenter les fonctionnalités FullStack | Prévu, non implémenté |
 | Antoine | Analyser les risques et exigences de sécurité | Configuré : revue, rapport `SECURITY_REVIEW.MD` et corrections locales après validation humaine explicite |
 | Anne-Cécile | Définir et exécuter les tests, relever les anomalies | Prévu, non implémenté |
 | Vincent | Finaliser les livrables et la documentation | Prévu, non implémenté |
 
-Les frontières détaillées de Simone, Joao, Sébastien, Anne-Cécile et Vincent restent à valider. Aucun relais automatique n'est configuré entre les agents principaux.
+Les frontières détaillées de Simone, Sébastien, Anne-Cécile et Vincent restent à valider. Maxime et Joao peuvent se solliciter selon le protocole ci-dessous ; aucun changement de rôle ni validation humaine n'est implicite.
+
+### Joao — architecture logicielle
+
+Joao utilise le même modèle configuré que Maxime, `Claude Opus 5.5`, avec un effort de raisonnement explicitement fixé à `high`. Vérifier dans VS Code la disponibilité du libellé et la prise en charge de ce réglage ; la configuration locale ne prouve pas leur activation effective.
+
+Joao travaille à partir d'un besoin du chat, d'un ticket transmis par Maxime, d'un identifiant de ticket ADO ou des fichiers pertinents d'un dépôt. En cas d'accès ADO, il ne lit que le ticket identifié et, si nécessaire, ses commentaires via `ado/wit_work_item`. Il peut aussi consulter en lecture seule les pages Architecture DDI indiquées dans ses instructions, sans rechercher d'autres tickets ni modifier ADO ou le wiki. Il peut documenter une architecture existante ou proposer une architecture cible sans développer ni déployer la solution.
+
+Dans un dépôt, son livrable architectural est `ARCHITECTURE.md` à la racine. Il décrit le contexte, le périmètre, les composants principaux et leurs dépendances, ainsi que les flux utiles à la compréhension du système par l'équipe. Juste avant « Composants », une section « Vue d’ensemble des dépendances » présente un schéma Mermaid haut niveau : l'application analysée en un seul bloc, les applications appelantes et les systèmes avec lesquels elle communique autour, avec des liens nommant le rôle des échanges. Cette vue couvre les dépendances internes et externes au SI vérifiables dans les sources, sans détailler les couches internes ni les paquets logiciels. Le détail interne reste dans « Composants ». Joao peut déléguer un diagramme utile à UMLCreator.
+
+La vue « Composants » reste en Mermaid `flowchart`, sans prétendre à une notation UML formelle. Elle montre la structure : regroupements `subgraph` selon les frontières observées, composants à un niveau de détail homogène, systèmes externes séparés et flèches du composant dépendant vers le composant utilisé. Elle évite les détails de classes ou d'injection non structurants et les croisements excessifs ; un zoom ciblé peut compléter une vue trop dense. Les étapes de traitement et décisions restent dans les diagrammes de flux.
+
+Chaque flux ou fonctionnalité principal retenu est présenté dans une même sous-section avec une description des étapes et un diagramme Mermaid adapté. Les deux sont obligatoires et doivent concorder. Joao choisit le type pertinent : séquence pour les interactions entre participants, activité ou logigramme pour les traitements et décisions (en Mermaid `flowchart`). La vue haut niveau et le schéma de composants ne remplacent pas ces diagrammes. En documentation, les comportements représentés restent limités aux faits vérifiés dans les sources.
+
+Joao travaille selon trois modes :
+
+- **Documentation de l'existant** (mode par défaut) : il décrit seulement ce qu'il constate dans le dépôt. Pas de déduction, d'hypothèse, de point à confirmer, de risque, de recommandation ni de mention d'ADR. Il sollicite systématiquement Antoine pour une revue de sécurité du dépôt (`SECURITY_REVIEW.MD`) et y renvoie depuis `ARCHITECTURE.md`, sans évaluer lui-même la sécurité.
+- **Conception d'une architecture cible** : il distingue faits, propositions, décisions validées et points ouverts, et peut consulter Antoine pour un avis ciblé.
+- **Challenge** : uniquement sur demande explicite (par exemple challenger un besoin de Maxime). Il peut alors déduire et émettre des hypothèses, présentées comme telles.
+
+Les ADR ne concernent que les changements et décisions d'architecture. Toute modification de l'architecture existante est accompagnée d'un ADR distinct ; les décisions structurantes des architectures cibles sont également tracées conformément à la gouvernance. Joao utilise les conventions ADR du dépôt et demande le dossier de destination s'il n'est pas établi. Il suit le modèle Forem : statut, contexte, décision motivée, conséquences positives et négatives, vérification de conformité, auteur, date et ADR liés. Le titre utilise le code application fourni par le mapping OMA de Maxime et le prochain numéro disponible sur trois chiffres (`LDC-001`, `LDC-002`, etc.). Si le code ou la séquence n'est pas vérifiable, il demande au lieu de l'inventer. Un ADR `Accepté` exige une validation humaine.
+
+Joao prend en compte Clean Architecture, KISS, DRY et SOLID, ainsi que les [principes d'architecture logicielle du Forem](https://dev.azure.com/leforem/Tools%20Backlogs/_wiki/wikis/Architecture%20DDI/41159/%F0%9F%93%91-Principes-d'architecture-logicielle). Ils guident ses propositions sans constituer des dogmes ; les dérogations sont motivées, tracées dans un ADR et soumises à validation du Support aux développements de la DDI. La liste des principes peut évoluer selon les instructions ultérieures de l'utilisateur.
+
+Son accès d'écriture est limité par consigne à `ARCHITECTURE.md` et aux ADR concernés. Il préserve les contributions existantes, ne modifie pas ADO et n'exécute pas de commandes ou de tests. Ces limites de fichiers ne sont pas une sandbox technique. Voir [.github/agents/joao.agent.md](../.github/agents/joao.agent.md) pour les instructions détaillées.
+
+### Relais Maxime ↔ Joao pour les tickets
+
+Pour un besoin transmis par Maxime ou une intervention sur un ticket, Joao s'appuie d'abord sur la cible documentée dans `ARCHITECTURE.md` si elle est disponible et exploitable. Sinon, il signale la limite et utilise les principes du wiki Architecture DDI. Il distingue l'existant, les propositions et la cible validée ; une contradiction ou un accès impossible reste signalé, jamais résolu par une hypothèse silencieuse.
+
+Joao transmet à Maxime les compléments sourcés, les écarts, les impacts, les questions et les modifications proposées de Description, Acceptance Criteria ou commentaires. **Maxime reste seul responsable de l'écriture du besoin dans ADO**, après relecture et respect des validations humaines, du périmètre et des contrôles de révision existants. Une délégation ne vaut pas autorisation humaine d'écriture ; les décisions d'architecture ne sont pas validées par ce relais.
+
+Maxime peut consulter Joao (`agents: [Antoine, Joao]`) ; Joao peut appeler Maxime (`agents: [Antoine, UMLCreator, Maxime]`). Si Maxime a initié l'analyse, Joao retourne ses compléments directement sans le rappeler. Si Joao a été sollicité directement sur un ticket, Maxime traite le dossier sans rappeler Joao pour la même demande. Un appel impossible est signalé, sans annoncer de mise à jour fictive.
+
+La lecture locale de Maxime inclut les sections utiles de `ARCHITECTURE.md` pour ce relais, sans accès général au code ni droit d'écriture sur l'architecture ou les ADR. Maxime reste interdit de délégation à UMLCreator.
 
 `Antoine` effectue une revue statique en lecture seule du code, des dépendances, de l'IaC et de la configuration pertinente. Il consulte uniquement les pages publiques officielles OWASP utiles à la revue et n'envoie aucun contenu du dépôt vers un service externe. Il utilise OWASP Top 10:2025 comme cadre de sensibilisation pour les risques Web, en considérant seulement les catégories applicables et sans en faire une checklist exhaustive ou une certification. Il restitue des constats étayés, leur sévérité et leur niveau de confiance, puis recommande des corrections sans modifier le code ni tenter d'exploiter une vulnérabilité. Pour les périmètres API ou LLM, il signale que ce Top 10 ne couvre pas à lui seul les risques spécialisés. Il ne prétend pas certifier l'absence de risque.
+
+En revue du dépôt, Antoine reste observateur et constatateur : aucune extrapolation, hypothèse, question ouverte ou liste de points à confirmer. Chaque défaut et ses conséquences doivent être étayés par les sources accessibles ; une preuve manquante exclut le constat, même avec une confiance faible. Les recommandations portent uniquement sur les défauts étayés. Les sources inaccessibles sont signalées comme limites de couverture, sans supposer l'absence de protection. Cette règle vaut pour le rapport et le bilan dans le chat. Les consultations de besoin ou de conception restent distinctes ; les questions de périmètre et de validation de correction restent autorisées.
 
 Par défaut, les revues rattachées au dépôt créent ou actualisent uniquement `SECURITY_REVIEW.MD` à la racine, avec ce nom exact. Antoine relit le rapport existant et préserve les notes humaines et résultats non réexaminés ; une revue partielle n'efface pas les conclusions des autres périmètres. Il n'y copie aucun secret, donnée personnelle ou contenu métier sensible, ne crée aucun commit et vérifie le fichier après écriture. L'accès de l'outil `edit` n'est pas techniquement limité aux fichiers autorisés : cette restriction reste une consigne. Les consultations métier par Maxime ne déclenchent aucune écriture de rapport ni correction.
 
@@ -29,7 +69,7 @@ Il préserve les contributions existantes et actualise le rapport avec les modif
 
 Pour une code review sécurité, Antoine tient compte des configurations, intégrations CI et rapports locaux de SonarQube/SonarCloud et des autres outils de validation présents. Son rapport distingue les outils configurés des résultats réellement disponibles, indique leurs sources, leur actualité connue et les limites de couverture (exclusions, règles désactivées, rapports absents ou anciens). Les alertes de qualité ou Security Hotspots ne deviennent pas automatiquement des vulnérabilités : Antoine recoupe les éléments et regroupe les doublons. Il ne lance aucun scanner et n'accède pas aux tableaux de bord distants ; un export expurgé peut être fourni si nécessaire.
 
-Le sous-agent `UMLCreator` produit des diagrammes UML en Mermaid lorsqu'il est sollicité directement ou par un agent autorisé. Il est configuré en lecture seule et ne modifie ni ticket ni fichier : l'agent qui l'a sollicité relit et insère le résultat dans un livrable Markdown adapté. Maxime n'est pas autorisé à déléguer à UMLCreator pour la rédaction ou l'affinage des PBI ADO : les tickets ne rendant pas Mermaid, il décrit les flux en texte clair et ne publie pas de blocs de source Mermaid. Le futur agent Joao pourra être autorisé à utiliser UMLCreator pour un diagramme d'architecture destiné à `ARCHITECTURE.md`. Un agent principal doit autoriser explicitement UMLCreator dans sa liste `agents`. Le modèle de UMLCreator n'est pas fixé tant que son libellé exact n'a pas été vérifié dans VS Code. Les maquettes d'écran ne sont mentionnées dans les tickets de Maxime que lorsqu'elles sont fournies dans le besoin initial.
+Le sous-agent `UMLCreator` produit des diagrammes UML en Mermaid lorsqu'il est sollicité directement ou par un agent autorisé. Il est configuré en lecture seule et ne modifie ni ticket ni fichier : l'agent qui l'a sollicité relit et insère le résultat dans un livrable Markdown adapté. Maxime n'est pas autorisé à déléguer à UMLCreator pour la rédaction ou l'affinage des PBI ADO : les tickets ne rendant pas Mermaid, il décrit les flux en texte clair et ne publie pas de blocs de source Mermaid. Joao est autorisé à utiliser UMLCreator pour des diagrammes d'architecture pertinents destinés à `ARCHITECTURE.md`. Un agent principal doit autoriser explicitement UMLCreator dans sa liste `agents`. Le modèle de UMLCreator n'est pas fixé tant que son libellé exact n'a pas été vérifié dans VS Code. Les maquettes d'écran ne sont mentionnées dans les tickets de Maxime que lorsqu'elles sont fournies dans le besoin initial.
 
 ### Consultation d'Antoine par les autres agents
 
@@ -37,15 +77,15 @@ Antoine est utilisable directement et comme sous-agent. L'intensité ci-dessous 
 
 | Appelant | Intervention d'Antoine | Configuration |
 | --- | --- | --- |
-| Maxime — ponctuelle | Questions et exigences de sécurité du besoin, critères proposés ; pas de revue du code ni de décision d'architecture | Autorisé : outil `agent`, `agents: [Antoine]` |
-| Joao — intermédiaire | Risques de la solution, frontières de confiance, flux et permissions | À câbler lors de la création de Joao : outil `agent` et `Antoine` dans `agents` |
+| Maxime — ponctuelle | Questions et exigences de sécurité du besoin, critères proposés ; pas de revue du code ni de décision d'architecture | Autorisé : outil `agent`, `agents: [Antoine, Joao]` |
+| Joao — documentation de l'existant (systématique) ou conception | Revue de sécurité du dépôt (`SECURITY_REVIEW.MD`) ; en conception : risques, frontières de confiance, flux et permissions | Configuré : outil `agent`, `agents: [Antoine, UMLCreator, Maxime]` |
 | Sébastien — prioritaire | Revue de sécurité des implémentations et relecture des corrections pertinentes | À câbler lors de la création de Sébastien : outil `agent` et `Antoine` dans `agents` |
 
 L'appelant transmet un contexte confirmé et un objectif délimité, puis relit l'avis avant de l'intégrer à son livrable. En revue, Antoine ne modifie que son rapport local ; toute correction suit la procédure de validation humaine ci-dessus, sans accès ADO ni délégation. Sa consultation ne vaut pas validation humaine et ne permet pas de contourner les limites de l'appelant.
 
 ## Installation dans un dépôt
 
-1. Intégrer `.github/copilot-instructions.md`, `.github/agents/maxime.agent.md`, `.github/agents/umlcreator.agent.md`, `.github/agents/antoine.agent.md`, `.vscode/mcp.json` et `docs/` au dépôt cible. Fusionner les configurations existantes au lieu de les écraser.
+1. Intégrer `.github/copilot-instructions.md`, `.github/agents/maxime.agent.md`, `.github/agents/umlcreator.agent.md`, `.github/agents/antoine.agent.md`, `.github/agents/joao.agent.md`, `.vscode/mcp.json` et `docs/` au dépôt cible. Fusionner les configurations existantes au lieu de les écraser.
 2. Ouvrir le dépôt dans une version à jour de VS Code avec GitHub Copilot Chat et les agents personnalisés activés. N'accorder la confiance à l'espace de travail qu'après vérification de son contenu.
 3. Ouvrir `.vscode/mcp.json` et utiliser l'action de démarrage du serveur `ado`, ou la commande VS Code `MCP: List Servers` puis choisir `ado` et le démarrer.
 4. Autoriser la connexion et s'authentifier dans le parcours Microsoft Entra proposé par VS Code, avec un compte ayant accès à l'organisation `leforem`. Ne communiquer aucun secret à l'agent.
@@ -102,7 +142,7 @@ La configuration `X-MCP-Tools` expose uniquement les outils de lecture nécessai
 
 Certains outils regroupent plusieurs actions : par exemple `wit_backlog` inclut aussi le réordonnancement. Leur disponibilité ne vaut pas autorisation d'utiliser toutes leurs actions. Maxime ne les emploie qu'en lecture, sauf les écritures d'US et commentaires décrites dans son rôle. Pour une garantie forte, appliquer également les permissions ADO appropriées et les confirmations d'outils de VS Code ; ne pas activer une approbation globale sans examen.
 
-Les outils locaux `read` et `edit` ne sont pas limités techniquement à un dossier. Le périmètre documentaire de Maxime est donc une consigne, pas une sandbox. Il ne dispose pas du terminal ; sa délégation est limitée à Antoine pour les exigences de sécurité du besoin. La restriction de consultation Web d'Antoine aux sources OWASP est également une consigne, pas un filtrage technique des domaines.
+Les outils locaux `read` et `edit` ne sont pas limités techniquement à un dossier. Le périmètre documentaire de Maxime est donc une consigne, pas une sandbox. Il ne dispose pas du terminal ; sa délégation est limitée à Antoine pour les exigences de sécurité du besoin et à Joao pour l'alignement architectural. La restriction de consultation Web d'Antoine aux sources OWASP est également une consigne, pas un filtrage technique des domaines.
 
 Le cache `docs/maxime/references.md` est destiné à être versionné uniquement dans un dépôt dont l'accès est compatible avec la confidentialité des informations Forem. Ne pas publier ce cache, les correspondances internes ou les paramètres d'organisation dans un dépôt public sans autorisation. Vérifier son contenu avant chaque commit ; l'agent ne réalise pas les commits.
 
@@ -118,4 +158,4 @@ Références officielles consultées pour la configuration : [serveur MCP distan
 
 ## Suites possibles
 
-Vérifier dans une nouvelle conversation VS Code qu'Antoine est reconnu, appelable par Maxime sans écriture pour une question de sécurité du besoin, et que ses revues du dépôt n'écrivent que `SECURITY_REVIEW.MD` à la racine sans validation de correction. Vérifier séparément qu'un plan validé n'autorise que les corrections approuvées et leur suivi dans le rapport. Définir ensuite les entrées, livrables et outils des futurs agents ; câbler la consultation d'Antoine pour Joao et Sébastien selon le tableau ci-dessus. Ajouter `UMLCreator` à la liste `agents` de Joao uniquement si le relais de diagrammes d'architecture vers `ARCHITECTURE.md` est souhaité. Ne pas élargir les droits de Maxime au-delà de son rôle.
+Vérifier dans une nouvelle conversation VS Code qu'Antoine est reconnu, appelable par Maxime sans écriture pour une question de sécurité du besoin, et que ses revues du dépôt n'écrivent que `SECURITY_REVIEW.MD` à la racine sans validation de correction. Vérifier séparément qu'un plan validé n'autorise que les corrections approuvées et leur suivi dans le rapport. Vérifier Joao dans une nouvelle conversation sur les deux modes d'architecture, son accès en lecture au ticket explicitement identifié, ses consultations d'Antoine et UMLCreator et le respect de son périmètre d'écriture. Ne pas élargir les droits de Maxime au-delà de son rôle.

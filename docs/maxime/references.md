@@ -14,13 +14,14 @@ Vérifié le 2026-10-20 par les outils MCP ADO : authentification, paramètres d
 | Type de PBI actuel | `Support Request` uniquement | Utilisateur, confirmation après erreur sur `Service Request`, 2026-10-20 | Métadonnées accessibles ; conversion du ticket de test vérifiée |
 | Description | « Expression du besoin » ; pas d'INVEST, de section Critères d'acceptation ni d'État de l'affinage | Retour utilisateur, 2026-10-20 | Consignes de rédaction applicables |
 | Présentation des questions | Ton naturel ; sujets distincts, paragraphes courts et puces | Exemple utilisateur, 2026-10-20 | Ne pas recopier les questions métier de l'exemple dans le cache |
-| Diagrammes | Maxime ne délègue pas à UMLCreator et ne publie pas de source Mermaid dans les PBI ADO, car le rendu Mermaid n'y est pas pris en charge. Décrire les flux nécessaires en texte clair. Un futur agent Joao pourra utiliser UMLCreator pour `ARCHITECTURE.md`, s'il est explicitement autorisé. | Utilisateur, 2026-10-23 | Décision de fonctionnement actuelle |
+| Diagrammes | Maxime ne délègue pas à UMLCreator et ne publie pas de source Mermaid dans les PBI ADO, car le rendu Mermaid n'y est pas pris en charge. Décrire les flux nécessaires en texte clair. Joao est autorisé à utiliser UMLCreator pour les diagrammes architecturaux utiles à `ARCHITECTURE.md`. | Utilisateur, 2026-10-23 et validation du plan Joao, 2026-10-26 | Décision de fonctionnement actuelle |
 | Maquette | À mentionner seulement si fournie initialement | Retour utilisateur, 2026-10-20 | Consigne de rédaction applicable |
 | Application d'exemple | LDC : Listes De Contrôles | Utilisateur ; fiche Tool 179960, 2026-10-20 | Code OMA vérifié ; LDC ne définit pas le périmètre applicatif du template |
 | Structure du titre | `[Code OMA][NNN].[NN] - [Fonctionnalité]`, exemple `LDC001.01` | Utilisateur, confirmation du 2026-10-20 | Format retenu ; règle d'incrémentation non fournie |
 | Échanges | Questions dans les commentaires du ticket ; réponses ADO ou VS Code | Utilisateur, 2026-10-20 | Décision de fonctionnement validée |
 | Modification d'un ticket existant | Uniquement sur demande | Utilisateur, 2026-10-20 | Décision de fonctionnement validée |
 | Validation | Humaine explicite avant de considérer l'US prête | Plan approuvé, 2026-10-20 | Ne vaut pas Definition of Ready officielle Forem |
+| Relais architectural | Maxime peut consulter Joao et recevoir ses compléments sourcés. Joao utilise la cible de `ARCHITECTURE.md` si disponible, sinon les principes du wiki Architecture DDI. Seul Maxime écrit le besoin dans ADO après les validations et contrôles habituels ; aucun rappel réciproque pour la même demande. | Utilisateur, 2026-10-26 à 13:46 | Configuré ; fonctionnement en nouvelle conversation VS Code à vérifier |
 
 ## Sources à consulter
 
