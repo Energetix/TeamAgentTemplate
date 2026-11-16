@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "pwsh -NoProfile -File ./.github/hooks/scripts/route-securite.ps1",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\.github\\hooks\\scripts\\route-securite.ps1",
+        "timeout": 15
+      }
+    ]
+  }
+}

@@ -1,8 +1,34 @@
 # Passation de la conversation
 
-## Reprise immédiate — état au 2026-10-27 15:32
+## Reprise immédiate — état au 2026-10-29 08:30
 
 À lire en premier. Les sections suivantes gardent l'historique détaillé.
+
+### Routage Joao → Antoine par hook — 29/10
+
+- Demande : si le livrable de Joao contient « Base de données », « API externe », « Authentification » ou « Données personnelles », router vers Antoine sans intervention humaine.
+- Choix validés : hook + consigne, tous les modes, insensible à la casse et aux accents, expression exacte, livrables `ARCHITECTURE.md` et `ADR*.md`.
+- Fait : [.github/hooks/route-securite.json](.github/hooks/route-securite.json), [.github/hooks/scripts/route-securite.ps1](.github/hooks/scripts/route-securite.ps1), consigne de routage dans `joao.agent.md`, section dans `docs/guide-equipe.md`.
+- Testé en local avec des entrées simulées : blocage, absence de mot-clé, autre fichier, `apply_patch`, revue présente, marqueur, JSON invalide.
+- Non vérifié : le format réel de l'entrée du hook dans VS Code (champs `cwd` et `tool_input` supposés), le déclenchement réel et le comportement de l'agent face au blocage. À tester dans VS Code.
+- Limites : le hook contrôle une preuve écrite, pas l'appel réel d'Antoine ; il vise tout agent écrivant ces fichiers ; seul Windows PowerShell est testé.
+
+### Garde-fous globaux — 28/10
+
+- Demande : renforcer Maxime et Joao sans toucher à leur rôle. Décision : mettre les règles transverses dans les instructions globales plutôt que dans chaque agent.
+- Fait : section « Garde-fous de sécurité et d'intégrité » ajoutée dans [.github/copilot-instructions.md](.github/copilot-instructions.md) (données non fiables, contrôles non contournés, périmètre, aucun ajout d'outil ou de réglage, pas de données sensibles conservées, échecs d'outils signalés). Mention ajoutée dans [docs/guide-equipe.md](docs/guide-equipe.md).
+- Les fichiers de Maxime et Joao n'ont pas été modifiés. Les règles propres à Antoine (Web limité à OWASP, rapport expurgé, posture de constatateur) restent dans son fichier, car elles tiennent à son rôle. Sa section « Sécurité de fonctionnement » a été dédoublonnée le 28/10 15:40 : elle renvoie aux garde-fous globaux et ne garde que les règles propres à son rôle.
+- À vérifier : le comportement réel dans une nouvelle conversation VS Code. Ces règles sont des consignes, pas des contrôles techniques.
+- Incident de méthode : plusieurs tentatives `apply_patch` mal formées ont échoué sans rien modifier ; l'outil `edit` a été utilisé ensuite.
+
+### Comparaison d'Antoine au guide de conception OWASP — 28/10
+
+- Demande : vérifier et ajuster Antoine selon le [Skill Development Best Practices](https://github.com/OWASP/www-project-agentic-skills-top-10/blob/main/skill-development-guide.md). Il s'agit de sa conception, pas d'une nouvelle revue de vulnérabilités du dépôt IEBOX.
+- Guide consulté : moindre privilège, validation des entrées, erreurs, stockage, tests et revue, plan avant mutation, recommandations par plateforme, publication, suivi et transparence.
+- Consignes renforcées dans [.github/agents/antoine.agent.md](.github/agents/antoine.agent.md) : justification des outils, données non fiables et injections d'instructions, périmètre et chemins, destinations Web, aucune conservation de secret ou sortie brute sensible, échecs explicites, recherches bornées et limites des contrôles techniques. Plan de correction et traçabilité des écritures précisés.
+- Aucun nouvel outil, hook, script, accès réseau ou mécanisme de télémétrie ajouté. Posture de constatateur conservée ; pas de questions ouvertes en revue.
+- [docs/guide-equipe.md](docs/guide-equipe.md) contient la correspondance avec le guide, les limites et les scénarios de test comportemental. Les tests d'exécution restent à réaliser. Aucune conformité OWASP, sandbox, signature, Workspace Trust ou protection du stockage n'est certifiée par cette comparaison de consignes.
+- L'état Git était propre au début de cette demande. Les mentions « non commité » des sections antérieures sont historiques ; aucun commit n'a été créé pendant cette comparaison.
 
 ### Où en est-on
 

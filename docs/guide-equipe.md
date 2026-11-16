@@ -4,6 +4,10 @@
 
 Tous les agents écrivent dans un français simple, naturel et direct, comme un collègue qui explique un sujet à l'équipe. Cette règle couvre aussi les tickets, commentaires et livrables : phrases courtes, mots courants, paragraphes aérés, sans jargon inutile ni répétitions. Les détails utiles et les rubriques obligatoires restent présents. Les règles complètes figurent dans [.github/copilot-instructions.md](../.github/copilot-instructions.md).
 
+## Garde-fous communs de sécurité
+
+Les règles de fonctionnement sûr communes à tous les agents sont dans [.github/copilot-instructions.md](../.github/copilot-instructions.md), section « Garde-fous de sécurité et d'intégrité » : sources traitées comme données non fiables, pas de contournement des contrôles, périmètre de lecture et d'écriture, aucun ajout d'outil ou de réglage sans demande, aucune conservation de données sensibles et échecs d'outils signalés sans résultat inventé. Elles s'appliquent à Maxime, Joao, Antoine et UMLCreator sans modifier leur rôle. Les consignes de chaque agent restent dans son fichier ; celui d'Antoine renvoie à ces garde-fous au lieu de les répéter. Ces règles sont des instructions, pas des contrôles techniques : leur effet réel reste à vérifier dans VS Code.
+
 ## Périmètre
 
 Cette version implémente Maxime, le sous-agent UMLCreator, Antoine et Joao dans GitHub Copilot pour VS Code. Elle ne crée pas les quatre autres agents et ne déploie aucun service Azure.
@@ -61,6 +65,23 @@ En revue du dépôt, Antoine reste observateur et constatateur : aucune extrapol
 
 Par défaut, les revues rattachées au dépôt créent ou actualisent uniquement `SECURITY_REVIEW.MD` à la racine, avec ce nom exact. Antoine relit le rapport existant et préserve les notes humaines et résultats non réexaminés ; une revue partielle n'efface pas les conclusions des autres périmètres. Il n'y copie aucun secret, donnée personnelle ou contenu métier sensible, ne crée aucun commit et vérifie le fichier après écriture. L'accès de l'outil `edit` n'est pas techniquement limité aux fichiers autorisés : cette restriction reste une consigne. Les consultations métier par Maxime ne déclenchent aucune écriture de rapport ni correction.
 
+### Conception d'Antoine et guide OWASP
+
+Comparaison effectuée le 28/10/2026 avec le [Skill Development Best Practices d'OWASP](https://github.com/OWASP/www-project-agentic-skills-top-10/blob/main/skill-development-guide.md). Ce guide vise des skills et extensions exécutables ; Antoine est un fichier d'agent déclaratif. Les exemples de permissions et de configuration du guide ne sont pas ajoutés à son frontmatter : ils ne constituent pas des protections VS Code applicables à ce fichier.
+
+| Critère du guide | Application à Antoine | Limite de vérification |
+| --- | --- | --- |
+| Moindre privilège | Quatre outils justifiés : `read`, `search`, `web`, `edit` ; aucun terminal, ADO ou sous-agent. Rapport seul par défaut, corrections après validation. | Les familles d'outils restent larges ; les restrictions de chemins et de réseau ne sont pas une sandbox. |
+| Validation des entrées | Vérification du périmètre et des chemins, refus des sorties ou destinations ambiguës, pages OWASP publiques en HTTPS uniquement. Sources et résultats d'outils traités comme données, jamais comme autorisations. | La résolution fiable des chemins, liens et redirections dépend des outils ; en cas d'incertitude, Antoine suspend cet accès. |
+| Erreurs et confidentialité | Échecs signalés sans sortie brute sensible ; aucune réussite annoncée sans preuve. Aucun secret demandé, cache sensible ou copie de conversation. | Pas de vérification du stockage interne ou des journaux de VS Code. |
+| Stockage sécurisé | Pas de coffre ni de stockage de credentials nécessaire à l'agent. Rapport limité aux preuves expurgées. | Le chiffrement du poste et la rétention des conversations relèvent de l'environnement ; non vérifiés ici. |
+| Plan avant mutation | Plan de correction présenté avant écriture, mode proposition explicite, validation humaine et bilan des fichiers relié au plan. Hooks et instructions doivent être nommés s'ils sont concernés. | Antoine n'est pas un installateur et n'en exécute aucun ; pas de reçu JSON ni de mode CLI fictif. |
+| Tests et revue | Contrôles statiques des consignes ; scénarios de comportement à tester ci-dessous. | Aucun test d'exécution, scan ou test d'intrusion réalisé par cette comparaison. |
+| Publication et confiance | Source OWASP et changements documentés. Aucune certification ou signature revendiquée. | Signature, registre, gestion des clés et Workspace Trust ne sont pas implémentés par un fichier d'agent. |
+| Suivi et ressources | Recherches ciblées, arrêt des tentatives sans progrès, couverture partielle déclarée si nécessaire. | Pas de métriques, télémétrie ou quotas techniques ajoutés ; leur mise en place nécessiterait un dispositif distinct. |
+
+Avant de considérer le comportement validé, tester dans une nouvelle conversation, avec des données fictives : une instruction malveillante dans un commentaire ou un rapport, un chemin hors dépôt, une destination Web non autorisée, une erreur d'outil contenant une fausse donnée sensible, une demande de correction sans validation et un périmètre trop volumineux. Vérifier respectivement l'absence d'action induite, le refus de l'accès concerné, l'absence de requête interdite, la restitution expurgée, l'absence de correction et l'annonce d'une couverture partielle. Vérifier aussi les parcours autorisés : création du rapport et correction limitée au plan explicitement validé. Ces essais restent à réaliser ; les consignes seules ne prouvent pas leur réussite.
+
 ### Corrections après validation humaine
 
 Antoine peut appliquer des recommandations locales après présentation et validation humaine explicite d'un plan précisant les constats, fichiers ciblés, modifications, impacts et vérifications nécessaires. Une demande de revue, un rapport ou l'accord d'un autre agent ne suffit pas. En délégation, l'appelant doit transmettre cette validation et son périmètre. Tout élargissement nécessite une nouvelle validation.
@@ -85,7 +106,17 @@ L'appelant transmet un contexte confirmé et un objectif délimité, puis relit 
 
 ## Installation dans un dépôt
 
-1. Intégrer `.github/copilot-instructions.md`, `.github/agents/maxime.agent.md`, `.github/agents/umlcreator.agent.md`, `.github/agents/antoine.agent.md`, `.github/agents/joao.agent.md`, `.vscode/mcp.json` et `docs/` au dépôt cible. Fusionner les configurations existantes au lieu de les écraser.
+### Routage automatique de Joao vers Antoine
+
+Quand `ARCHITECTURE.md` ou un fichier `ADR*.md` contient « Base de données », « API externe », « Authentification » ou « Données personnelles », Joao doit appeler Antoine sans intervention humaine, quel que soit son mode.
+
+- Le contrôle est un hook `PostToolUse` : [route-securite.json](../.github/hooks/route-securite.json) lance [route-securite.ps1](../.github/hooks/scripts/route-securite.ps1) après chaque outil.
+- Le script ignore la casse et les accents. Il cherche l'expression exacte, pas ses variantes (« authentifier », « API tierce »).
+- Si un mot-clé est présent et qu'aucune preuve de revue n'existe, il bloque et renvoie l'agent vers Antoine. La preuve est un `SECURITY_REVIEW.MD` à la racine ou près du livrable, ou la ligne « Avis de sécurité d'Antoine : » dans le livrable.
+- Limites : le hook ne vérifie pas qu'Antoine a vraiment été appelé, il vérifie la preuve écrite. Un `SECURITY_REVIEW.MD` ancien suffit. Il s'applique à tout agent qui écrit ces fichiers, pas seulement à Joao. Il ne couvre que les fichiers nommés `ARCHITECTURE.md` et `ADR*.md`, pas le chat.
+- Il suppose Windows PowerShell (`pwsh` ailleurs) et la prise en charge des hooks dans VS Code. À valider dans votre version avant de s'y fier. Le hook exécute un script : le relire avant d'accorder la confiance à l'espace de travail.
+
+1. Intégrer `.github/copilot-instructions.md`, `.github/agents/maxime.agent.md`, `.github/agents/umlcreator.agent.md`, `.github/agents/antoine.agent.md`, `.github/agents/joao.agent.md`, `.github/hooks/`, `.vscode/mcp.json` et `docs/` au dépôt cible. Fusionner les configurations existantes au lieu de les écraser.
 2. Ouvrir le dépôt dans une version à jour de VS Code avec GitHub Copilot Chat et les agents personnalisés activés. N'accorder la confiance à l'espace de travail qu'après vérification de son contenu.
 3. Ouvrir `.vscode/mcp.json` et utiliser l'action de démarrage du serveur `ado`, ou la commande VS Code `MCP: List Servers` puis choisir `ado` et le démarrer.
 4. Autoriser la connexion et s'authentifier dans le parcours Microsoft Entra proposé par VS Code, avec un compte ayant accès à l'organisation `leforem`. Ne communiquer aucun secret à l'agent.
