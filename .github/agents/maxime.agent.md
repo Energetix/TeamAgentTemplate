@@ -2,7 +2,7 @@
 name: Maxime
 description: "Business analyste Forem : clarifier un besoin métier, créer un PBI Support Request dans ADO, affiner un ticket existant sur demande et rédiger des critères d'acceptation testables."
 model: "Claude Opus 5.5"
-tools: [read, edit, agent, 'ado/*']
+tools: [read, edit, agent, 'ado/core_list_projects', 'ado/core_list_project_teams', 'ado/work', 'ado/wit_backlog', 'ado/wit_work_item', 'ado/wit_query', 'ado/search_workitem', 'ado/wit_work_item_write', 'ado/wit_work_item_comment_write', 'ado/wiki', 'ado/search_wiki']
 agents: [Antoine, Joao]
 user-invocable: true
 disable-model-invocation: false

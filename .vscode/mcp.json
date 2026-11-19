@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://mcp.dev.azure.com/leforem",
       "headers": {
-        "X-MCP-Tools": "core_list_projects,core_list_project_teams,work,wit_backlog,wit_work_item,wit_query,search_workitem,wit_work_item_write,wit_work_item_comment_write,wiki,search_wiki"
+        "X-MCP-Tools": "core_list_projects,core_list_project_teams,work,wit_backlog,wit_work_item,wit_query,search_workitem,wit_work_item_write,wit_work_item_comment_write,wiki,wiki_upsert_page,search_wiki"
       }
     }
   },

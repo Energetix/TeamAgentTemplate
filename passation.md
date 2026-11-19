@@ -4,6 +4,13 @@
 
 À lire en premier. Les sections suivantes gardent l'historique détaillé.
 
+### Écriture Wiki pour Joao — 19/11
+
+- Demande : Joao lit, crée et met à jour des documents d'architecture technique et d'intégration dans tous les wikis du projet Dossier Unique Chercheur Emploi (CRM), sans suppression.
+- Fait : `wiki_upsert_page` ajouté à `X-MCP-Tools` dans `.vscode/mcp.json` et à `tools` de Joao ; consignes d'écriture dans `joao.agent.md` (relecture préalable, `etag`, confirmation avant chaque écriture, syntaxe `::: mermaid`) ; `ado/*` de Maxime remplacé par la liste explicite de ses outils, sans `wiki_upsert_page`.
+- Source : outil documenté dans `docs/TOOLSET.md` de microsoft/azure-devops-mcp et sur la page Learn du serveur distant. Le code local remplace la page entière et récupère l'`etag` s'il est absent.
+- Non vérifié : exposition effective de l'outil après rechargement du serveur MCP dans VS Code, droits ADO d'écriture du compte, écriture réelle. Limite : l'outil n'est pas restreint au projet CRM.
+
 ### Routage Joao → Antoine par hook — 29/10
 
 - Demande : si le livrable de Joao contient « Base de données », « API externe », « Authentification » ou « Données personnelles », router vers Antoine sans intervention humaine.
