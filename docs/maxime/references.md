@@ -1,5 +1,7 @@
 # Références et cache de Maxime
 
+Ce cache ne s'applique qu'aux projets dont `PROJET.md` indique le contexte `Forem`. Hors Forem, Maxime ne le lit pas et n'y écrit pas.
+
 ## État du cache
 
 Vérifié le 2026-10-20 par les outils MCP ADO : authentification, paramètres de Squad Prague, backlog, page Ressources et ses neuf descendants, correspondances OMA et métadonnées des types `User story` puis `Support Request`. Le test initial a créé une `User story`. Après retour utilisateur, le type applicable est désormais uniquement `Support Request` : conversion et correction de description effectuées avec test de révision, puis relecture réussie et comparaison stricte des Acceptance Criteria inchangés. Ajout et corrections du commentaire également vérifiés. Le contenu métier de cet essai n'est pas conservé dans le cache. Un conflit de concurrence n'a pas été provoqué. La numérotation automatique et une Definition of Ready officielle ne sont pas établies.
@@ -14,14 +16,17 @@ Vérifié le 2026-10-20 par les outils MCP ADO : authentification, paramètres d
 | Type de PBI actuel | `Support Request` uniquement | Utilisateur, confirmation après erreur sur `Service Request`, 2026-10-20 | Métadonnées accessibles ; conversion du ticket de test vérifiée |
 | Description | « Expression du besoin » ; pas d'INVEST, de section Critères d'acceptation ni d'État de l'affinage | Retour utilisateur, 2026-10-20 | Consignes de rédaction applicables |
 | Présentation des questions | Ton naturel ; sujets distincts, paragraphes courts et puces | Exemple utilisateur, 2026-10-20 | Ne pas recopier les questions métier de l'exemple dans le cache |
-| Diagrammes | Maxime ne délègue pas à UMLCreator et ne publie pas de source Mermaid dans les PBI ADO, car le rendu Mermaid n'y est pas pris en charge. Décrire les flux nécessaires en texte clair. Joao est autorisé à utiliser UMLCreator pour les diagrammes architecturaux utiles à `ARCHITECTURE.md`. | Utilisateur, 2026-10-23 et validation du plan Joao, 2026-10-26 | Décision de fonctionnement actuelle |
-| Maquette | À mentionner seulement si fournie initialement | Retour utilisateur, 2026-10-20 | Consigne de rédaction applicable |
+| Diagrammes | Maxime ne délègue pas à UMLCreator et ne publie pas de source Mermaid dans les PBI ADO, car le rendu Mermaid n'y est pas pris en charge. Décrire les flux nécessaires en texte clair. Joao est autorisé à utiliser UMLCreator pour les diagrammes architecturaux utiles à `ARCHITECTURE.md`, et Simone pour les parcours utilisateur. | Utilisateur, 2026-10-23 et validation du plan Joao, 2026-10-26 | Décision de fonctionnement actuelle |
+| Maquette | À mentionner seulement si fournie initialement ou produite par Simone pour ce besoin (chemin ou lien uniquement) | Retour utilisateur, 2026-10-20 ; création de Simone, 2026-11-23 | Consigne de rédaction applicable |
 | Application d'exemple | LDC : Listes De Contrôles | Utilisateur ; fiche Tool 179960, 2026-10-20 | Code OMA vérifié ; LDC ne définit pas le périmètre applicatif du template |
 | Structure du titre | `[Code OMA][NNN].[NN] - [Fonctionnalité]`, exemple `LDC001.01` | Utilisateur, confirmation du 2026-10-20 | Format retenu ; règle d'incrémentation non fournie |
 | Échanges | Questions dans les commentaires du ticket ; réponses ADO ou VS Code | Utilisateur, 2026-10-20 | Décision de fonctionnement validée |
 | Modification d'un ticket existant | Uniquement sur demande | Utilisateur, 2026-10-20 | Décision de fonctionnement validée |
 | Validation | Humaine explicite avant de considérer l'US prête | Plan approuvé, 2026-10-20 | Ne vaut pas Definition of Ready officielle Forem |
 | Relais architectural | Maxime peut consulter Joao et recevoir ses compléments sourcés. Joao utilise la cible de `ARCHITECTURE.md` si disponible, sinon les principes du wiki Architecture DDI. Seul Maxime écrit le besoin dans ADO après les validations et contrôles habituels ; aucun rappel réciproque pour la même demande. | Utilisateur, 2026-10-26 à 13:46 | Configuré ; fonctionnement en nouvelle conversation VS Code à vérifier |
+| Relais UX | Maxime peut consulter Simone pour les écrans, parcours et questions d'ergonomie. Il reprend dans le ticket les règles et critères utiles en texte clair, avec le chemin ou le lien de la maquette ; Simone ne le rappelle pas et n'écrit pas dans le ticket. | Utilisateur, 2026-11-23 | Configuré ; fonctionnement à vérifier |
+| Publication wiki | Sur demande explicite, publication d'un document relevant du rôle de Maxime dans le wiki ADO désigné par l'utilisateur, après relecture et avec `etag` ; aucune suppression. Sans confirmation par écriture depuis le 2026-11-23. | Utilisateur, 2026-11-23 | Configuré ; non testé par Maxime |
+| Bugs | Créés par Maxime seul, à partir des anomalies qualifiées par Joao. En mode ADO, type de work item, zone et convention de titre définis dans `PROJET.md` ; aucun défini à ce jour pour le contexte Forem. En mode local, suivis dans `ANALYSE.md`. | Utilisateur, 2026-11-23 | À compléter dans `PROJET.md` avant la première création de bug ADO |
 
 ## Sources à consulter
 

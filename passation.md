@@ -1,15 +1,156 @@
 # Passation de la conversation
 
-## Reprise immédiate — état au 2026-10-29 08:30
+## Point de reprise — 2026-11-23 16:00
 
-À lire en premier. Les sections suivantes gardent l'historique détaillé.
+À lire en premier dans une nouvelle session. Ce bloc est l'état courant ; tout ce qui suit est un journal historique. En cas d'écart, ce bloc, les fichiers d'agents et `docs/guide-equipe.md` font foi.
+
+### Objectif
+
+Construire une équipe d'agents GitHub Copilot pour VS Code (template à copier dans un dépôt), utilisable en contexte Forem ou sur un projet personnel. L'utilisateur est le PO. À terme, les agents enchaînent les étapes en autonomie, orchestrés par Philippe, et ne remontent à l'utilisateur que les validations obligatoires et les questions qu'aucun agent ne peut trancher.
+
+### Agents
+
+| Agent | Fichier | Modèle | État |
+| --- | --- | --- | --- |
+| Maxime (besoin, bugs, `PROJET.md`, `ANALYSE.md`) | `.github/agents/maxime.agent.md` | Claude Opus 5.5 | Mode ADO Forem testé (10/2026) ; mode local et processus non testés |
+| Simone (UI/UX) | `.github/agents/simone.agent.md` | Claude Sonnet 5.5, effort medium | Créée le 23/11, non testée |
+| Joao (architecture, contexte technique, relecture PR, qualification des anomalies) | `.github/agents/joao.agent.md` | Claude Opus 5.5, effort high | Écriture wiki testée le 19/11 ; rôle dans le processus non testé |
+| Antoine (sécurité) | `.github/agents/antoine.agent.md` | non fixé | Premier test accepté (10/2026) ; posture de constatateur à retester |
+| UMLCreator (diagrammes Mermaid) | `.github/agents/umlcreator.agent.md` | non fixé | Délégation imbriquée testée le 23/11 |
+| Sébastien, Anne-Cécile, Vincent, Léo, Philippe | — | — | Non créés ; Léo et Philippe déjà spécifiés dans le guide |
+
+### Fichiers clés
+
+- `.github/copilot-instructions.md` : règles communes, dont « Configuration du projet » (`PROJET.md` lu par tous, écrit par Maxime seul) et « Autonomie et remontée des questions » (libellé « À remonter à l'utilisateur », pas de rappel de l'appelant).
+- `docs/guide-equipe.md` : référence fonctionnelle (rôles, processus, Philippe, Léo, modes de suivi, harnesses, hook, installation, points ouverts).
+- `docs/maxime/` : `modele-projet.md` (modèle de `PROJET.md` + exemple Forem), `modele-analyse.md` (modèle de `ANALYSE.md`), `modele-us.md` (rubriques d'un besoin), `references.md` (cache Forem uniquement).
+- `.github/hooks/route-securite.json` + `scripts/route-securite.ps1` : rappel vers Antoine si `ARCHITECTURE.md`, `ADR*.md` ou `contexte-technique.md` contient « Base de données », « API externe », « Authentification » ou « Données personnelles ».
+- `.vscode/mcp.json` : serveur MCP distant `ado` (`https://mcp.dev.azure.com/leforem`), outils listés dans `X-MCP-Tools`, dont `wiki_upsert_page`.
+
+### Prochaine étape décidée : test sur un petit projet local
+
+Avant de concevoir Sébastien. Rien n'est encore lancé.
+
+1. Créer un nouveau dossier (petite application Web, par exemple une liste de tâches), l'ouvrir comme espace de travail VS Code, harness Copilot. Y copier `.github/` et `docs/`, sans `.vscode/mcp.json`, `PROJET.md` ni `ANALYSE.md`.
+2. **Maxime** : créer `PROJET.md` (contexte Autre, suivi Local, wiki Aucun), puis `ANALYSE.md` avec `FCT-001` ; vérifier découpage, questions et réponses, validation du PO, statut `Validé par le PO`.
+3. **Simone** : proposition de 2-3 design systems et de la charte (`docs/ux/charte.md`), validation par l'utilisateur ; parcours et maquette dans `docs/ux/FCT-001/` ; questions métier à Maxime ; critères UX intégrés par Maxime dans `ANALYSE.md`.
+4. **Joao** (mode conception) : `ARCHITECTURE.md` (projet entier), ADR `Proposé` si l'architecture change, `docs/fonctionnalites/FCT-001/contexte-technique.md`, diagrammes délégués à UMLCreator.
+5. **Antoine** : doit être appelé si la fonctionnalité touche à l'authentification ou aux données personnelles ; vérifier le déclenchement réel du hook (rappel `additionalContext`).
+6. Relever les écarts, corriger agents et guide, puis mettre à jour ce bloc.
+
+L'utilisateur a proposé de lancer le test lui-même ; l'assistant peut préparer les prompts de chaque étape s'il le demande.
+
+### Décisions et points encore ouverts
+
+- **À trancher en concevant Philippe** : en mode ADO, qui transmet à Simone la synthèse du ticket ; passage à Joao possible ou non avec des maquettes provisoires (charte non validée) ; Joao appelle-t-il Sébastien directement pour une correction ou passe-t-il par Philippe ; qui demande une publication wiki dans le processus autonome ; outils exacts de Philippe et Léo.
+- **Choix faits par l'assistant, jamais validés explicitement** : contexte technique toujours écrit dans un fichier, même avec ADR ; livrables par identifiant (`docs/ux/<ID>/`, `docs/fonctionnalites/<ID>/`) ; bug sans lien ADO vers le besoin ; identifiants locaux plus grand + 1, jamais réutilisés ; statuts locaux des besoins et bugs ; wiki local par défaut `docs/wiki/`. L'utilisateur ne les a pas contestés ; les confirmer si l'occasion se présente.
+- **Ordre de travail proposé, non validé** : Sébastien, Anne-Cécile, Vincent, puis Léo et Philippe (Philippe n'est créé qu'une fois les trois premiers disponibles : décision utilisateur).
+- **Toujours en attente** : appel d'Antoine systématique en mode documentation, ou seulement pour les dépôts avec dépendances externes au SI.
+- **Contexte Forem** : type, zone et convention de titre des bugs ADO à renseigner dans `PROJET.md` ; libellés exacts des modèles à vérifier dans le sélecteur VS Code.
+- **Avant tout commit** : rien n'est commité ; `README.md` apparaissait vide le 26/10, à vérifier avec l'utilisateur. Fichiers nouveaux non suivis : `simone.agent.md`, `modele-projet.md`, `modele-analyse.md`. `route-securite.json` a été migré au format Copilot hors des interventions de l'assistant.
+- **Wiki CRM (hors template)** : contradictions signalées sur Dossiers Représentation (recalcul §3 vs §4 ; statut vs cases non cochées) et Service Opérationnel (Gufid des autres codes Gestion Accès, usage des recherches PCU) à faire arbitrer par le PO. Dernier `etag` constaté de Service Opérationnel : `adeee7f948be111bce478c6f40699559a7d4785d` (modifiée par un tiers après le 19/11).
+
+### Méthode de travail attendue par l'utilisateur
+
+- Réponses et documents en français, ton direct et concis (règles « Style de rédaction »).
+- **Après chaque évolution, ne laisser aucune incohérence** : propager le changement dans tous les fichiers concernés (instructions communes, agents, guide, documents de Maxime, passation), puis relire. L'utilisateur l'a demandé explicitement deux fois.
+- Poser les décisions structurantes avec `ask_user` au lieu de supposer ; signaler clairement les choix faits sans validation.
+- Vérifier dans la documentation officielle avant d'affirmer un comportement de VS Code / Copilot ; dire ce qui n'est pas vérifié. Ne pas présenter un test simulé comme un test réel.
+- Ne rien commiter sans demande. Ne rien créer par anticipation (agents futurs).
+- Pour modifier les fichiers d'agents ou de configuration, l'utilisateur passe par l'agent Copilot par défaut (Joao refuse d'écrire hors de son périmètre).
+
+### Repères techniques
+
+- **Harness Copilot** (cible) : ignore `agents`, `handoffs` et `argument-hint` ; les délégations reposent sur les consignes ; délégation via l'outil `task`, imbrication sur deux niveaux vérifiée. Harness Local déprécié (février 2027). Indications grisées dans les `.agent.md` : normales, ne pas supprimer ces champs ni ajouter `target` (décision utilisateur).
+- **Hook Copilot `postToolUse`** : entrée `toolArgs` (Local : `tool_input`), sortie `additionalContext` ; ne bloque pas. Script compatible avec les deux formats ; tester avec des charges JSON simulées par `powershell -File` (voir journal du 23/11).
+- **`wiki_upsert_page`** remplace toute la page : relire, transmettre l'`etag`, syntaxe `::: mermaid` / `:::` dans les wikis ADO.
+- **ADO** : si 401 ou erreur d'authentification, demander `/mcp auth ado` ou un redémarrage du serveur ; un échec ponctuel en sous-agent a été observé le 23/11 puis a disparu.
+- **Fichiers** : UTF-8 sans BOM, fins de ligne CRLF (une réécriture complète doit les conserver). Sous PowerShell 5.1, les accents s'affichent mal mais les fichiers sont corrects ; le script du hook évite les accents (lu en ANSI).
+- Vérifier le format avec `git --no-pager diff --check` après chaque série de modifications.
+
+## Journal détaillé du 23/11 (historique)
+
+### Ancienne liste « Où en est-on » — 23/11 matin
+
+- Agents en place : Maxime, UMLCreator, Joao, Antoine et Simone (créée le 23/11). Sébastien, Anne-Cécile et Vincent ne sont pas commencés ; ne pas les créer par anticipation.
+- Restent à faire à cette date : retester Antoine ; tester les modes de Joao ; tester le hook ; trancher l'appel systématique à Antoine ; tester Simone et la publication wiki de Maxime ; câbler Sébastien ; trancher les points ouverts du processus. Voir le point de reprise ci-dessus pour l'état courant.
+
+### Processus cible de l'équipe — 23/11
+
+- Décrit dans `docs/guide-equipe.md`, section « Processus de l'équipe » : Maxime (besoin, découpage en une responsabilité par ticket) → Simone (UX) → Joao (ADR si changement d'architecture, sinon contexte à Sébastien ; Antoine au besoin) → Sébastien (branche depuis `main`/`master`, PR validée par Joao et Antoine puis poussée) → Anne-Cécile (tests, rapport à Joao) → boucle Joao qualifie / Maxime crée le bug / Sébastien corrige → Vincent (documentation projet et processus métier).
+- Décisions de l'utilisateur :
+  - agents autonomes ; question ou validation remontée à l'utilisateur seulement si aucun agent n'est responsable ou ne sait répondre ; jamais d'invention ;
+  - questions métier de Simone : Maxime d'abord, puis l'utilisateur ; réponse documentée dans la discussion du ticket ;
+  - `ARCHITECTURE.md` = documentation du projet entier, évolutive en conception de projet ; ADR seulement si une fonctionnalité change l'architecture ;
+  - seul Maxime crée les tickets, y compris les bugs, sur la base des éléments de Joao issus du rapport d'Anne-Cécile ; une responsabilité par agent ;
+  - Joao : documentation d'architecture technico-fonctionnelle ; Vincent : projet et processus métier.
+- Points ouverts initiaux, tranchés le 23/11 :
+  - validations humaines conservées : ticket prêt (Maxime), plan de correction d'Antoine, charte graphique de Simone, PR avant fusion (en plus de Joao et Antoine) ;
+  - écritures wiki de Joao, Maxime et Simone désormais autonomes, sans confirmation par écriture ; relecture, `etag`, périmètre, interdiction de supprimer et relecture après écriture conservés ;
+  - passage d'étape par un agent chef d'orchestre appelant chaque agent comme sous-agent ;
+  - Sébastien fusionne la PR après validations ;
+  - type et zone des bugs définis par projet.
+- Restent ouverts : conception du chef d'orchestre (nom, outils, blocages, reprise) et vérification des sous-agents imbriqués dans VS Code ; adaptations de Simone, Joao et Maxime, dont le retrait des confirmations wiki ; configuration ADO de Maxime propre au Forem.
+- Orchestrateur décidé le 23/11 : **Philippe**, `Claude Sonnet 5.5`, coordination uniquement (aucun livrable, aucune écriture ADO), une fonctionnalité à la fois, démarrage après le travail direct de l'utilisateur avec Maxime (à partir de l'identifiant du ticket), fichier d'état propre corrélé à la reprise avec le livrable de l'étape en cours, au plus 3 cycles de correction avant remontée. Nouvel agent **Léo** pour le contrôle qualité de chaque livrable en fin d'étape, avant passage à l'agent suivant. Précisions du 23/11 : fichier d'état `docs/fonctionnalites/<ID>/etat.md` ; Philippe créé seulement quand Sébastien, Anne-Cécile et Vincent existeront. Léo : `Claude Sonnet 5.5`, lecture ADO (tickets, wiki) sans écriture ; contrôle conformité au ticket, complétude, cohérence avec les étapes précédentes, respect des règles, points ouverts bloquants ; en cas de refus, retour à l'agent auteur avec les écarts, 2 essais puis remontée. Imbrication vérifiée le 23/11 (voir plus haut). Non créés. Ordre de travail proposé, non validé : Sébastien, Anne-Cécile, Vincent, puis Léo et Philippe.
+- Aucun fichier d'agent n'a été modifié pour ce processus. Les consignes de Joao, Maxime et Simone exigent encore une confirmation avant chaque écriture wiki, tant qu'elles ne sont pas adaptées.
+- **Adaptations faites le 23/11 après-midi** (détail dans `docs/guide-equipe.md`, « Adaptations du 2026-11-23 ») :
+  - règle commune « Autonomie et remontée des questions » dans `.github/copilot-instructions.md` ;
+  - Maxime : un ticket par responsabilité, réponses aux questions métier consignées dans le ticket, création des bugs, intégration autonome des compléments de Joao et Simone hors changement métier, wiki sans confirmation ; ligne « Bugs » ajoutée à `docs/maxime/references.md` (type, zone et titre à définir) ;
+  - Simone : `agents` + Maxime et Joao, livrables dans `docs/ux/<ID>/`, validation de la charte remontée, wiki sans confirmation ;
+  - Joao : section « Rôle dans le processus de l'équipe » (conception d'une fonctionnalité avec `docs/fonctionnalites/<ID>/contexte-technique.md`, relecture des PR, qualification des anomalies), wiki sans confirmation ; `agents` inchangé, Sébastien et Anne-Cécile cités en consigne seulement.
+  - Choix faits sans décision explicite de l'utilisateur, à confirmer : contexte technique écrit par Joao dans un fichier, même avec un ADR ; livrables UX rangés par identifiant de ticket ; bug sans lien ADO vers le ticket (outil de lien non exposé).
+  - Décidé ensuite le 23/11 : un ADR doit être `Accepté` par un humain avant le développement (Joao et guide mis à jour).
+  - Restent ouverts : mode sans ADO (`ANALYSE.md`) et indépendance de Maxime vis-à-vis du Forem, en cours de conception.
+- **Modes de suivi et indépendance du Forem — 23/11** : décisions de l'utilisateur : `PROJET.md` à la racine (contexte, code application, mode de suivi ADO/Local, mode de wiki ADO/Local/Aucun, indépendants) ; mode local par un seul `ANALYSE.md` (besoins `FCT-NNN`, questions et réponses, historique, « Suivi des bugs » `BUG-NNN`) ; périmètre limité à Maxime pour l'instant ; pour Joao plus tard, wiki Architecture DDI seulement en contexte Forem.
+  - Fait : `maxime.agent.md` réécrit (sections « Configuration du projet », « Mode de suivi local », « Mode de suivi ADO », « Contexte Forem » regroupant toutes les règles Forem conservées, création et suivi des bugs dans les deux modes, publication ADO/locale/aucune) ; nouveaux modèles `docs/maxime/modele-projet.md` (avec exemple Forem) et `docs/maxime/modele-analyse.md` ; `modele-us.md` rendu générique ; `references.md` limité au contexte Forem ; guide (section « Configuration du projet et modes de suivi », installation).
+  - Choix faits sans décision explicite : pas de bascule automatique vers le local si ADO est indisponible ; identifiants locaux calculés à partir du fichier (plus grand + 1, jamais réutilisés) ; statuts locaux des besoins (`En affinage`, `Validé par le PO`, `Terminé`, `Abandonné`) et des bugs (`Ouvert`, `En correction`, `À retester`, `Fermé`) ; wiki local par défaut `docs/wiki/`.
+  - À faire : adapter Joao, Simone et les agents suivants à `PROJET.md` et au mode local (lecture de `ANALYSE.md` au lieu du ticket, wiki selon le mode). Tester Maxime en mode local.
+  - Fait ensuite le 23/11 (validé par l'utilisateur) : `PROJET.md` partagé par toute l'équipe. Règle commune « Configuration du projet » dans `.github/copilot-instructions.md` (lecture par tous, écriture par Maxime seul, besoins et bugs selon le mode, publication selon le mode de wiki, pas de bascule automatique, règles Forem seulement en contexte Forem). Joao : lecture du besoin dans ADO ou `ANALYSE.md`, section « Wikis » par mode, principes DDI et gouvernance ADR Forem seulement en contexte Forem, code application des ADR depuis `PROJET.md`. Simone : besoin dans ADO ou `ANALYSE.md`, publication selon le mode. Les futurs agents héritent de la règle commune. Reste à tester en mode local.
+- **Revue approfondie de Joao et Simone — 23/11** : corrigé : vocabulaire « ticket » dans les sources de Joao ; mode conception imposé à Joao dans le processus et pour les questions d'agents (le mode documentation par défaut aurait interdit ADR et propositions) ; section « Sécurité » d'`ARCHITECTURE.md` adaptée à la conception ; conversion des seuls délimiteurs Mermaid pour le wiki ADO (contradiction avec « sans le réécrire ») ; statuts ADR explicites hors Forem ; dossier de wiki local ajouté aux périmètres d'écriture de Joao et Simone ; Simone et Joao ne rappellent pas leur appelant pour leurs consultations. Décisions de l'utilisateur : `ARCHITECTURE.md` mis à jour avec changements marqués « Proposé (ADR X) », finalisés ou retirés selon la décision ; routage vers Antoine étendu à `contexte-technique.md` (consigne + hook, testé sur 5 cas simulés) ; en contexte Forem, Joao lit et publie dans les wikis du portefeuille indiqué par l'utilisateur, sans utiliser `PROJET.md` pour ce choix.
+- Points à traiter lors de la conception de Philippe : en mode ADO, qui transmet à Simone la synthèse du ticket (elle n'a pas accès aux tickets) ; passage à Joao possible ou non avec des maquettes provisoires tant que la charte n'est pas validée ; Joao appelle-t-il Sébastien directement pour une correction ou passe-t-il par Philippe.
+- Prochaine étape décidée : test sur un petit projet local (Maxime, Simone, Joao, éventuellement Antoine) avant Sébastien.
+- **Passe de cohérence complète — 23/11** (demande de l'utilisateur : ne laisser aucune incohérence après chaque évolution) :
+  - **Hook inopérant corrigé** : `route-securite.json` avait été migré hors de mes interventions au format Copilot (`postToolUse`, `bash`/`powershell`, `timeoutSec`). Dans ce format, l'entrée contient `toolArgs` (et non `tool_input`) et la sortie attendue est `additionalContext` (`decision: block` ignoré). Le script ne détectait donc rien. Il accepte maintenant les deux formats (y compris `toolArgs` en chaîne JSON) et émet `additionalContext` plus `decision`/`reason` pour Local ; 7 cas simulés testés. Dans Copilot, `postToolUse` ne peut ni annuler ni bloquer : c'est un rappel injecté au modèle. Source : [référence des hooks Copilot](https://docs.github.com/en/copilot/reference/hooks-reference).
+  - Instructions communes : exception de publication pour Joao en contexte Forem, `ANALYSE.md` comme donnée non fiable, vocabulaire « besoin ».
+  - Antoine : Simone dans la description, lecture de `ANALYSE.md` en local, verdict sur les PR avec Joao.
+  - Joao : vocabulaire « besoin » partout (relais, qualification, délégations).
+  - Guide : titre et introduction hors Forem ; modes, ADR, principes et écritures de Joao ; relais Maxime ↔ Joao (intégration autonome) ; Simone (besoin, publication, fichiers, rappel) ; processus (besoin, contexte technique, ADR accepté, PR validée par un humain et fusionnée, 3 cycles) ; Philippe et Léo (besoin, `ANALYSE.md`) ; points ouverts Philippe regroupés ; hook ; vérification initiale et exemples d'utilisation ; dépannage ; références.
+  - Passation : sections « Configuration de Maxime / UMLCreator / Joao » et tableau des agents remis à jour ; sections inférieures marquées comme historique.
+- La mention ci-dessus sur les confirmations wiki est historique : elles sont retirées.
+- Indications (`Hint`) grisées dans les `.agent.md` : l'utilisateur choisit le 23/11 de ne pas ajouter `target`. **Correction du 23/11 après lecture de la documentation VS Code** : ces indications ne concernent pas « hors de VS Code » mais le harness Copilot ; le harness Local est déprécié (suppression en février 2027). Dans Copilot, `agents`, `handoffs` et `argument-hint` sont ignorés : les restrictions de délégation ne reposent que sur les consignes. Voir `docs/guide-equipe.md`, section « Harnesses Local et Copilot ». Ne pas supprimer ces champs.
+- Test du 23/11 dans cette conversation (harness Copilot) : délégation imbriquée réussie (agent principal → Joao → UMLCreator via `task`) ; lecture ADO par Joao en sous-agent : un échec d'authentification puis un succès. `handoffs` écarté (Local uniquement) : orchestrateur confirmé.
+- La page Wiki Service Opérationnel a été modifiée par un tiers après notre écriture du 19/11 : `etag` `adeee7f948be111bce478c6f40699559a7d4785d` constaté le 23/11.
+
+### Création de Simone (UI/UX) — 23/11
+
+- Décisions de l'utilisateur :
+  - livrables : parcours, charte graphique, maquettes basse fidélité en Markdown, règles et critères UX ; revue UX et accessibilité sur demande ;
+  - sollicitations : d'abord un besoin transmis par Maxime ; ensuite les questions d'UI/UX de Maxime, Joao et Sébastien ;
+  - dossier de travail local `docs/ux/`, nettoyé à chaque nouveau projet après liste et confirmation explicite ; publication sur demande dans un wiki ADO désigné par l'utilisateur, avec les garde-fous de Joao ;
+  - pas de charte Forem : Simone propose 2 ou 3 design systems, l'utilisateur choisit, puis elle fixe les design tokens ; WCAG 2.2 AA proposé par défaut, à confirmer dans la charte ; liste de contrôle (accessibilité, hiérarchie, cohérence, états, lisibilité, heuristiques de Nielsen) ;
+  - applications Web uniquement ;
+  - délégations : UMLCreator pour les parcours, Antoine pour un avis ciblé ; Maxime et Joao peuvent appeler Simone ;
+  - modèle moins coûteux : `Claude Sonnet 5.5`, `reasoning-effort: medium` (libellé à vérifier dans VS Code) ;
+  - maquettes et tickets : Maxime reprend seulement les règles et critères en texte clair, avec le chemin ou le lien de la maquette.
+- Également décidé : Maxime reçoit l'écriture wiki (`ado/wiki_upsert_page`) avec les mêmes garde-fous, dans le wiki désigné par l'utilisateur. Cela remplace la restriction du 19/11.
+- Fait : [.github/agents/simone.agent.md](.github/agents/simone.agent.md) créé (outils `read`, `search`, `edit`, `agent`, `ado/wiki`, `ado/wiki_upsert_page` ; `agents: [UMLCreator, Antoine]`) ; Maxime (`agents` + Simone, `wiki_upsert_page`, sections « Consultation UX de Simone » et « Publication dans un wiki Azure DevOps », règle des maquettes) ; Joao (`agents` + Simone, consultation UX) ; UMLCreator et Antoine (collaboration avec Simone) ; `docs/maxime/modele-us.md` et `references.md` (maquettes, relais UX, publication wiki) ; guide d'équipe (section « Simone — UI/UX », tableaux, installation, outils, compatibilité, vérifications). `.vscode/mcp.json` inchangé, `wiki_upsert_page` y étant déjà.
+- Non vérifié : reconnaissance de Simone et de son modèle, existence d'un outil de suppression de fichier pour les agents, comportements de délégation.
+- Point de structure : le guide n'avait pas de titre pour la partie Antoine ; un titre « Antoine — sécurité » a été ajouté après la section Simone.
 
 ### Écriture Wiki pour Joao — 19/11
 
-- Demande : Joao lit, crée et met à jour des documents d'architecture technique et d'intégration dans tous les wikis du projet Dossier Unique Chercheur Emploi (CRM), sans suppression.
-- Fait : `wiki_upsert_page` ajouté à `X-MCP-Tools` dans `.vscode/mcp.json` et à `tools` de Joao ; consignes d'écriture dans `joao.agent.md` (relecture préalable, `etag`, confirmation avant chaque écriture, syntaxe `::: mermaid`) ; `ado/*` de Maxime remplacé par la liste explicite de ses outils, sans `wiki_upsert_page`.
-- Source : outil documenté dans `docs/TOOLSET.md` de microsoft/azure-devops-mcp et sur la page Learn du serveur distant. Le code local remplace la page entière et récupère l'`etag` s'il est absent.
-- Non vérifié : exposition effective de l'outil après rechargement du serveur MCP dans VS Code, droits ADO d'écriture du compte, écriture réelle. Limite : l'outil n'est pas restreint au projet CRM.
+- Demande : Joao lit, crée et met à jour des documents d'architecture technique et d'intégration dans tous les wikis du projet Dossier Unique Chercheur Emploi (CRM), sans suppression. Lecture étendue à tous les wikis de ce projet, dans la limite des droits ADO ; pas d'autres projets.
+- Fait : `wiki_upsert_page` ajouté à `X-MCP-Tools` dans `.vscode/mcp.json` et à `tools` de Joao ; consignes d'écriture dans `joao.agent.md` (relecture préalable, `etag` transmis, présentation du wiki, du chemin, de l'action et du contenu, confirmation explicite avant chaque écriture, relecture après écriture, syntaxe `::: mermaid` / `:::`) ; `ado/*` de Maxime remplacé par la liste explicite de ses outils, sans `wiki_upsert_page`. Guide aligné.
+- Source : outil documenté dans `docs/TOOLSET.md` de microsoft/azure-devops-mcp et sur la page Learn du serveur distant. Le code de la version locale remplace la page entière ; il récupère l'`etag` s'il est absent, d'où la consigne de toujours le transmettre.
+- Vérifié le 19/11, après redémarrage du serveur MCP `ado` : l'outil est exposé, le compte a les droits d'écriture et trois mises à jour ont réussi, chacune confirmée par l'utilisateur puis relue :
+  - page [Service Opérationnel](https://dev.azure.com/leforem/Dossier%20Unique%20Chercheur%20Emploi%20(CRM)/_wiki/wikis/Dossier-Unique-Chercheur-Emploi-(CRM).wiki/48019/Service-Op%C3%A9rationnel) : passage des 4 diagrammes de ` ```mermaid ` à `::: mermaid`, puis ajout de la sous-section « Recherche des PCU » (recherche par code postal avec exemple de réponse abrégé, recherche globale et échéance du 01/01/2027, état d'accessibilité Code Gestion Accès). Dernier `etag` constaté : `c3055411530b5763cb831632c12e0a14a898878c` ;
+  - page [Dossiers Représentation](https://dev.azure.com/leforem/Dossier%20Unique%20Chercheur%20Emploi%20(CRM)/_wiki/wikis/Dossier-Unique-Chercheur-Emploi-(CRM).wiki/48013/Dossiers-Repr%C3%A9sentation) : 3 schémas texte convertis en Mermaid (AS-IS, TO-BE, séquence du flag) produits par UMLCreator. Dernier `etag` constaté : `b56c59c05c83bc560cd7abe4009d8d6d35614fd5`.
+- Non vérifié : le rendu visuel des diagrammes dans le navigateur.
+- Points signalés à l'utilisateur, non tranchés, à faire arbitrer par le PO ou l'auteur des pages :
+  - Dossiers Représentation : le §3 recalcule l'employabilité dans tous les cas, le §4 seulement si le flag change ; la section « Statut » annonce qu'aucune action ne reste en suspens alors que trois cases de suivi ne sont pas cochées ;
+  - Service Opérationnel : Gufid des codes Gestion Accès « Inactif », « Archivé » et « Supprimé » non fournis ; usage des recherches PCU par le CRM DU (chargement initial, détermination du site) non précisé.
+- `SO.md` : copie locale temporaire de la page Service Opérationnel, créée en attendant l'outil d'écriture Wiki. Retirée par l'utilisateur le 23/11 ; la page Wiki fait référence.
+- Limite : `wiki_upsert_page` n'est pas restreint au projet CRM ; cette limite repose sur la consigne de Joao et les droits ADO.
 
 ### Routage Joao → Antoine par hook — 29/10
 
@@ -17,7 +158,7 @@
 - Choix validés : hook + consigne, tous les modes, insensible à la casse et aux accents, expression exacte, livrables `ARCHITECTURE.md` et `ADR*.md`.
 - Fait : [.github/hooks/route-securite.json](.github/hooks/route-securite.json), [.github/hooks/scripts/route-securite.ps1](.github/hooks/scripts/route-securite.ps1), consigne de routage dans `joao.agent.md`, section dans `docs/guide-equipe.md`.
 - Testé en local avec des entrées simulées : blocage, absence de mot-clé, autre fichier, `apply_patch`, revue présente, marqueur, JSON invalide.
-- Non vérifié : le format réel de l'entrée du hook dans VS Code (champs `cwd` et `tool_input` supposés), le déclenchement réel et le comportement de l'agent face au blocage. À tester dans VS Code.
+- Non vérifié : le format réel de l'entrée du hook dans VS Code (champs `cwd` et `tool_input` supposés), le déclenchement réel et le comportement de l'agent face au blocage. À tester dans VS Code. **Mise à jour du 23/11** : format Copilot vérifié dans la documentation (`toolArgs`, sortie `additionalContext`, pas de blocage possible) et script adapté ; seul le déclenchement réel reste à tester.
 - Limites : le hook contrôle une preuve écrite, pas l'appel réel d'Antoine ; il vise tout agent écrivant ces fichiers ; seul Windows PowerShell est testé.
 
 ### Garde-fous globaux — 28/10
@@ -37,8 +178,7 @@
 - [docs/guide-equipe.md](docs/guide-equipe.md) contient la correspondance avec le guide, les limites et les scénarios de test comportemental. Les tests d'exécution restent à réaliser. Aucune conformité OWASP, sandbox, signature, Workspace Trust ou protection du stockage n'est certifiée par cette comparaison de consignes.
 - L'état Git était propre au début de cette demande. Les mentions « non commité » des sections antérieures sont historiques ; aucun commit n'a été créé pendant cette comparaison.
 
-### Où en est-on
-
+### Où en est-on — 29/10 (historique, voir le point de reprise en tête)
 - Maxime et UMLCreator : configurés et validés par l'utilisateur. Ne pas les rouvrir sans demande.
 - Joao : l'utilisateur valide sa nouvelle version le 27/10 à 12:54. Le retest proposé ci-dessous n'est plus un préalable à cette validation utilisateur ; ne pas inventer de vérifications supplémentaires.
 - Antoine : après lecture du rapport partagé, l'utilisateur demande le 27/10 de supprimer les questions ouvertes et de rester observateur / constatateur en revue, sans extrapolation ni hypothèse. Consignes et guide ajustés ; comportement à retester.
@@ -98,39 +238,41 @@ Retour du 27/10 à 15:32 : l'utilisateur relève l'usage de `flowchart` pour les
 ### Repères techniques pour reprendre
 
 - Wiki Architecture DDI (projet `Tools Backlogs`) : principes (41159), gouvernance ADR (42619), templates (42608). Les sous-pages de templates se lisent avec `get_page` et le chemin canonique `/⚒️ Templates/APP-001 - Énoncé de la décision de l'ADR` ; le lien de la page gouvernance est cassé.
-- ADR : titre `[CodeApplication]-[NNN] - Décision affirmative`, code OMA depuis le cache de Maxime, statuts Brouillon / Proposé / Accepté / Constaté / Supplanté. Le dossier ADR est à demander si le dépôt n'en a pas.
+- ADR : titre `[CodeApplication]-[NNN] - Décision affirmative`, code application depuis `PROJET.md` (en contexte Forem, à défaut, code OMA du cache de Maxime), statuts Brouillon / Proposé / Accepté / Constaté / Supplanté. Le dossier ADR est à demander si le dépôt n'en a pas.
 - Si le MCP `ado` renvoie 401, demander à l'utilisateur de se réauthentifier (`/mcp auth ado`).
 - Sous PowerShell, les accents s'affichent mal mais les fichiers UTF-8 sont corrects. Pour éditer des lignes accentuées longues, voir d'abord le texte exact et procéder par petits blocs.
 - Les limites de fichiers des agents (`read`, `edit`) sont des consignes, pas une sandbox technique.
 
 ---
 
-Dernière mise à jour de l'historique ci-dessous : 2026-10-26, après validation du plan de conception de Joao à 13:25 (heure locale utilisateur). Cette mise à jour inclut la consultation en lecture des pages du wiki Architecture DDI consacrées aux principes et aux modèles ADR. Elle ne contient ni secret ni copie du contenu métier des tickets. Les états et révisions ci-dessous sont des observations historiques à revérifier avant toute écriture.
+Dernière mise à jour de l'historique ci-dessous : 2026-10-26, complétée ponctuellement ensuite. **Ces sections sont un historique.** En cas d'écart, l'état en tête de ce fichier et `docs/guide-equipe.md` font foi ; les sections « Configuration de … » ont été remises à jour le 2026-11-23. Elle ne contient ni secret ni copie du contenu métier des tickets. Les états et révisions ci-dessous sont des observations historiques à revérifier avant toute écriture.
 
 ## Reprise rapide : Joao
 
 - L'utilisateur a validé le plan de conception de l'agent Architecte **Joao**. La configuration a été créée dans ce template partagé ; son comportement effectif reste à vérifier dans une nouvelle conversation VS Code. Ne pas relancer par défaut le durcissement d'Antoine : l'utilisateur a considéré son premier test satisfaisant le 26/10 à 11:10.
 - Maxime fonctionne selon la validation utilisateur : création, modification et alimentation des commentaires avec les derniers inputs. Antoine est configuré et son premier essai est accepté, sans certification de sécurité ni clôture de tous les risques résiduels.
 - Joao peut travailler à partir d'un besoin dans le chat, du contexte d'un ticket transmis par Maxime, d'un identifiant ADO ou des fichiers pertinents d'un dépôt. Son livrable dépôt est `ARCHITECTURE.md` ; ses décisions structurantes et tout changement de l'architecture existante nécessitent des ADR distincts.
-- Joao est autorisé à consulter Antoine pour un avis intermédiaire et UMLCreator pour les diagrammes utiles. Il dispose de `ado/wit_work_item` pour lire le ticket explicitement identifié et de `ado/wiki` pour lire les pages Architecture DDI citées ; aucune recherche générale ni écriture ADO/wiki.
+- Joao est autorisé à consulter Antoine pour un avis intermédiaire et UMLCreator pour les diagrammes utiles. Il dispose de `ado/wit_work_item` pour lire le ticket explicitement identifié et de `ado/wiki` pour lire les pages Architecture DDI citées ; aucune recherche générale ni écriture ADO/wiki. Évolution du 19/11 : lecture de tous les wikis du projet CRM et écriture Wiki via `ado/wiki_upsert_page` (voir « Point de reprise »).
 - Les principes de conception incluent Clean Architecture, KISS, DRY, SOLID et le référentiel Architecture DDI. Les détails des livrables, statuts ADR et permissions figurent dans [.github/agents/joao.agent.md](.github/agents/joao.agent.md) et [docs/guide-equipe.md](docs/guide-equipe.md).
 
 ## Objectif et périmètre
 
-Construire un template d'équipe d'agents GitHub Copilot pour VS Code, intégrable par copier-coller dans un dépôt Git de projet du Forem. Maxime, le sous-agent UMLCreator, Antoine et Joao sont configurés. Après constat que les tickets ADO n'affichent pas le rendu Mermaid, Maxime ne peut plus déléguer à UMLCreator et ne publie pas de source Mermaid dans les PBI. Le 26/10, une délégation ciblée à Antoine est autorisée pour les exigences de sécurité du besoin.
+Construire un template d'équipe d'agents GitHub Copilot pour VS Code, intégrable par copier-coller dans un dépôt Git, en contexte Forem ou sur tout autre projet (depuis le 23/11, via `PROJET.md`). Maxime, le sous-agent UMLCreator, Antoine, Joao et Simone sont configurés. Après constat que les tickets ADO n'affichent pas le rendu Mermaid, Maxime ne délègue pas à UMLCreator et ne publie pas de source Mermaid dans les tickets. Le 26/10, une délégation ciblée à Antoine est autorisée pour les exigences de sécurité du besoin.
 
 | Agent | Rôle envisagé | État |
 | --- | --- | --- |
-| Maxime | Business Analyste : clarification du besoin, rédaction et affinage des PBI ADO | Implémenté et ajusté après test |
+| Maxime | Business Analyste : clarification du besoin, rédaction et affinage dans ADO ou `ANALYSE.md`, suivi des bugs | Implémenté et ajusté après test ; modes de suivi ajoutés le 23/11 |
 | UMLCreator | Sous-agent : diagrammes UML en Mermaid | Implémenté ; lecture seule, résultats retournés à l'agent principal |
-| Simone | Expertise UI/UX | Non implémentée |
-| Joao | Architecture | Implémenté ; validation en nouvelle conversation VS Code à effectuer |
+| Simone | Expertise UI/UX | Configurée le 23/11 ; à tester |
+| Joao | Architecture | Implémenté ; version validée le 27/10 ; écriture Wiki vérifiée le 19/11 ; rôle dans le processus ajouté le 23/11, à tester |
 | Sébastien | Développement FullStack | Non implémenté |
 | Antoine | Revue statique de sécurité du code, des dépendances, de l'IaC et de la configuration | Configuré ; rapport `SECURITY_REVIEW.MD` et corrections locales après validation humaine explicite |
 | Anne-Cécile | Tests | Non implémentée |
 | Vincent | Finalisation et documentation | Non implémenté |
+| Léo | Contrôle qualité de chaque livrable | Non implémenté |
+| Philippe | Orchestrateur | Non implémenté |
 
-UMLCreator peut être sollicité directement ou par un agent autorisé lorsque le diagramme est utile, sans génération systématique. Il produit les types de diagrammes utiles au besoin et retourne son résultat à l'agent principal, qui le relit et l'insère dans un livrable Markdown adapté. Maxime ne l'utilise pas pour la rédaction de PBI ADO. Joao est autorisé à l'utiliser pour les diagrammes d'architecture. Son modèle n'est pas fixé en attendant la vérification du libellé dans VS Code.
+UMLCreator peut être sollicité directement ou par un agent autorisé lorsque le diagramme est utile, sans génération systématique. Il produit les types de diagrammes utiles au besoin et retourne son résultat à l'agent principal, qui le relit et l'insère dans un livrable Markdown adapté. Maxime ne l'utilise pas pour rédiger un besoin. Joao l'utilise pour les diagrammes d'architecture, Simone pour les parcours. Son modèle n'est pas fixé en attendant la vérification du libellé dans VS Code.
 
 Le paragraphe suivant décrit le mode revue par défaut d'Antoine ; le mode correction après validation est défini dans la section « Évolution : corrections validées du 26/10 ».
 
@@ -172,12 +314,15 @@ Complément du 26/10 pour Antoine : il peut être installé seul dans un dépôt
 
 ## Configuration de Maxime
 
-- Agent : [.github/agents/maxime.agent.md](.github/agents/maxime.agent.md).
-- Règles communes : [.github/copilot-instructions.md](.github/copilot-instructions.md).
-- Modèle demandé : `Claude Opus 5.5`, selon la liste fournie par l'utilisateur. Son libellé exact et sa disponibilité dans le sélecteur VS Code restent à confirmer ; aucune comparaison objective des modèles n'a été effectuée.
-- Outils : `read`, `edit`, `agent`, `ado/*`. Aucun terminal ni Web ; sous-agents autorisés : `agents: [Antoine, Joao]`. Maxime devient appelable comme sous-agent pour recevoir les compléments de Joao, sans autorisation implicite d'écriture.
-- Lecture locale limitée par consigne aux instructions, à `docs/maxime/` et aux sections utiles de `ARCHITECTURE.md` pour le relais architectural ; écriture locale limitée à `docs/maxime/references.md`. Ces limites ne constituent pas une sandbox technique.
-- Maxime ne développe pas et ne choisit pas d'architecture. Il consulte ponctuellement Antoine pour les exigences de sécurité du besoin, sans inspection du code par délégation ni élargissement de son périmètre. Pour les PBI ADO, il ne publie pas de source Mermaid ; si nécessaire, il décrit les flux en texte clair.
+État au 2026-11-23 ; le détail fait foi dans l'agent et le guide.
+
+- Agent : [.github/agents/maxime.agent.md](.github/agents/maxime.agent.md). Règles communes : [.github/copilot-instructions.md](.github/copilot-instructions.md).
+- Modèle : `Claude Opus 5.5`, libellé à confirmer dans le sélecteur VS Code.
+- Outils : `read`, `edit`, `agent` et une liste explicite d'outils ADO (`core_list_projects`, `core_list_project_teams`, `work`, `wit_backlog`, `wit_work_item`, `wit_query`, `search_workitem`, `wit_work_item_write`, `wit_work_item_comment_write`, `wiki`, `wiki_upsert_page`, `search_wiki`). `agents: [Antoine, Joao, Simone]`, non appliqué dans le harness Copilot. Aucun terminal ni Web.
+- Configuration du projet : crée et tient seul `PROJET.md` ; mode de suivi ADO ou local (`ANALYSE.md`, besoins `FCT-NNN`, bugs `BUG-NNN`) ; règles Forem (Prague, `Support Request`, titre OMA, wiki Ressources, cache `docs/maxime/references.md`) seulement en contexte Forem.
+- Lecture locale : instructions, `docs/maxime/`, `PROJET.md`, `ANALYSE.md`, sections utiles de `ARCHITECTURE.md`. Écriture locale : `PROJET.md`, `ANALYSE.md`, `docs/maxime/references.md` en contexte Forem, et ses documents en mode de wiki local. Consignes, pas une sandbox.
+- Processus : un besoin par responsabilité, découpage après accord du PO ; réponses aux questions métier des agents, consignées ; création des bugs à partir des anomalies qualifiées par Joao ; intégration autonome des compléments de Joao et Simone hors changement métier ; publication wiki sur demande, sans confirmation par écriture ; validation du PO avant de considérer un besoin prêt.
+- Il ne développe pas, ne choisit pas d'architecture et ne délègue pas à UMLCreator pour rédiger un besoin ; aucune source Mermaid dans les tickets ADO.
 
 ## Délégation sécurité décidée le 26/10
 
@@ -191,7 +336,7 @@ Complément du 26/10 pour Antoine : il peut être installé seul dans un dépôt
 
 - Agent : [.github/agents/umlcreator.agent.md](.github/agents/umlcreator.agent.md).
 - Outil autorisé : `read` uniquement. UMLCreator ne modifie pas directement ADO ni les fichiers du dépôt.
-- Maxime ne l'autorise pas dans sa liste `agents`. Joao l'autorise pour les diagrammes d'architecture utiles et relit tout résultat avant intégration.
+- Maxime ne l'autorise pas dans sa liste `agents`. Joao l'utilise pour les diagrammes d'architecture et Simone pour les parcours ; ils relisent tout résultat avant intégration. La liste `agents` n'est pas appliquée dans le harness Copilot.
 - UMLCreator produit uniquement des diagrammes utiles, fondés sur les faits fournis ou les fichiers pertinents. Il signale les inconnues sans inventer de contenu.
 - Maxime ne place pas de source Mermaid dans la Description ADO. Joao peut insérer dans `ARCHITECTURE.md` les diagrammes utiles produits par UMLCreator après relecture.
 - Modèle non fixé avant vérification dans le sélecteur VS Code.
@@ -200,15 +345,15 @@ Complément du 26/10 pour Antoine : il peut être installé seul dans un dépôt
 
 - Agent : [.github/agents/joao.agent.md](.github/agents/joao.agent.md).
 - Modèle : `Claude Opus 5.5`, comme Maxime, avec `reasoning-effort: high`, selon la demande utilisateur du 26/10 à 13:34. La disponibilité du modèle et l'application effective du réglage restent à vérifier dans VS Code ; la configuration de Maxime n'a pas été modifiée.
-- Entrées : besoin dans le chat, contexte/ticket transmis par Maxime, identifiant ADO explicite, ou dépôt ouvert pour analyser l'architecture existante.
-- Outils : `read`, `search`, `edit`, `agent`, `ado/wit_work_item`, `ado/wiki`. Pour ADO, seules les lectures du ticket demandé (et de ses commentaires si nécessaires) et des pages Architecture DDI citées sont prévues ; aucune recherche globale ni écriture ADO ou wiki. Aucun terminal ni Web.
-- Sous-agents autorisés : `Antoine` pour la sécurité (revue systématique du dépôt en mode documentation, avis ciblé en conception), `UMLCreator` pour des diagrammes utiles et `Maxime` pour l'intégration des compléments au ticket. Joao relit les résultats ; ils ne valent pas validation humaine.
-- Trois modes (retour du premier test, 26/10) : documentation de l'existant strictement factuelle (ni déduction, ni hypothèse, ni point à confirmer, ni risque, ni mention d'ADR) ; conception d'une cible ; challenge uniquement sur demande explicite.
-- Livrable dépôt : `ARCHITECTURE.md` à la racine, décrivant contexte, périmètre, composants, dépendances, flux et mécanismes de sécurité constatés avec renvoi vers `SECURITY_REVIEW.MD`. Les fichiers d'ADR sont séparés et suivent le dossier et les conventions existantes ; si aucun dossier n'est établi, Joao demande où les créer.
-- Les ADR ne concernent que les changements et décisions d'architecture. Toute modification de l'architecture existante exige un ADR ; les décisions structurantes d'une architecture cible sont également tracées. Le titre suit le format du wiki `CodeApplication-### - Décision affirmative`. Joao reprend le code OMA du cache de Maxime ou des informations fiables fournies, inspecte les ADR existants et incrémente la séquence. En cas de code ou numéro non vérifiable, il demande au lieu d'inventer.
-- Le modèle ADR impose statut, contexte, décision justifiée, conséquences positives et négatives, vérification de conformité et notes (auteur, date, ADR liés). `Accepté` requiert une validation des parties prenantes ; `Constaté` sert à documenter un fait observé sans décision historique connue.
-- Principes : Clean Architecture, KISS, DRY et SOLID, plus le référentiel officiel Architecture DDI. La liste peut évoluer selon les instructions ultérieures de l'utilisateur.
-- Les seules écritures autorisées par consigne sont `ARCHITECTURE.md` et les ADR concernés. Joao ne code, ne déploie, ne modifie aucune permission et n'exécute ni commande ni test. Ces limites ne sont pas une sandbox technique.
+- Entrées : besoin dans le chat, besoin transmis par Maxime, identifiant de besoin (ticket ADO ou `FCT-NNN`), ou dépôt ouvert pour analyser l'architecture existante ; dans le processus, besoin validé et documents de Simone.
+- Outils : `read`, `search`, `edit`, `agent`, `ado/wit_work_item`, `ado/wiki`, `ado/wiki_upsert_page`. Lecture du besoin dans ADO ou `ANALYSE.md`. Wikis : en contexte Forem, ceux du portefeuille indiqué par l'utilisateur (pas `PROJET.md`) et les pages Architecture DDI ; ailleurs, selon le mode de wiki de `PROJET.md`. Publication sur demande, sans confirmation par écriture, sans suppression. Aucune modification de besoin ni de `PROJET.md`. Aucun terminal ni Web.
+- Sous-agents : `Antoine` (revue systématique en documentation, avis ciblé en conception, routage obligatoire), `UMLCreator` (tous les diagrammes), `Maxime` (compléments au besoin, questions métier, bugs), `Simone` (questions UI/UX) ; plus tard `Sébastien` et `Anne-Cécile`. Joao relit les résultats ; ils ne valent pas validation humaine.
+- Trois modes : documentation de l'existant strictement factuelle ; conception (appliquée dans le processus et pour les questions d'agents) ; challenge sur demande explicite. Le mode documentation reste le défaut en cas de doute hors processus.
+- Livrable dépôt : `ARCHITECTURE.md` à la racine, documentation du projet entier, évolutive en conception. Dans le processus : `docs/fonctionnalites/<ID>/contexte-technique.md` pour Sébastien, relecture des PR, qualification des anomalies.
+- ADR : uniquement pour un changement ou une décision d'architecture, créé `Proposé`, accepté par un humain avant le développement ; `ARCHITECTURE.md` mis à jour avec les changements marqués « Proposé (ADR X) ». Titre `CodeApplication-### - Décision affirmative`, code application de `PROJET.md` (en contexte Forem, à défaut, cache OMA de Maxime). Gouvernance et modèle Forem en contexte Forem ; même structure ailleurs sauf convention du dépôt.
+- Le modèle ADR impose statut, contexte, décision justifiée, conséquences positives et négatives, vérification de conformité et notes (auteur, date, ADR liés). `Accepté` requiert une validation humaine ; `Constaté` sert à documenter un fait observé sans décision historique connue.
+- Principes : Clean Architecture, KISS, DRY et SOLID ; en contexte Forem, référentiel Architecture DDI et dérogations validées par la DDI ; ailleurs, source éventuelle de `PROJET.md` et dérogations validées par l'utilisateur.
+- Écritures par consigne : `ARCHITECTURE.md`, ADR, `contexte-technique.md`, documents en mode de wiki local, pages wiki autorisées. Joao ne code, ne déploie, ne modifie aucune permission et n'exécute ni commande ni test. Ces limites ne sont pas une sandbox technique.
 - Sources lues pour la conception : [Principes d'architecture logicielle](https://dev.azure.com/leforem/Tools%20Backlogs/_wiki/wikis/Architecture%20DDI/41159/%F0%9F%93%91-Principes-d'architecture-logicielle), [Gouvernance des ADR](https://dev.azure.com/leforem/Tools%20Backlogs/_wiki/wikis/Architecture%20DDI/42619/Gouvernance-des-ADR), [modèle ADR](https://dev.azure.com/leforem/Tools%20Backlogs/_wiki/wikis/Architecture%20DDI/42608/%E2%9A%92%EF%B8%8F-Templates), [modèle de travail d'architecture](https://dev.azure.com/leforem/Tools%20Backlogs/_wiki/wikis/Architecture%20DDI/42608/%E2%9A%92%EF%B8%8F-Templates) et [modèle de dette](https://dev.azure.com/leforem/Tools%20Backlogs/_wiki/wikis/Architecture%20DDI/42608/%E2%9A%92%EF%B8%8F-Templates). Les pages modèles ont été retrouvées sous l'index « Templates » via leurs chemins canoniques.
 
 ### Relais architectural vers les tickets — demande du 26/10 à 13:46
@@ -257,7 +402,7 @@ Maxime ne surveille pas les commentaires en arrière-plan : l'utilisateur doit l
 
 ## Fichiers de référence
 
-- [.vscode/mcp.json](.vscode/mcp.json) : serveur MCP officiel distant, nommé `ado`, URL `https://mcp.dev.azure.com/leforem`, liste explicite d'outils ; aucun secret enregistré.
+- [.vscode/mcp.json](.vscode/mcp.json) : serveur MCP officiel distant, nommé `ado`, URL `https://mcp.dev.azure.com/leforem`, liste explicite d'outils (`wiki_upsert_page` inclus depuis le 19/11) ; aucun secret enregistré. Après modification de la liste, redémarrer le serveur MCP dans VS Code.
 - [docs/guide-equipe.md](docs/guide-equipe.md) : installation, responsabilités, fonctionnement, limites des outils et résultats de vérification.
 - [docs/maxime/modele-us.md](docs/maxime/modele-us.md) : modèle de PBI Support Request, séparation Description / Acceptance Criteria et présentation des commentaires.
 - [docs/maxime/references.md](docs/maxime/references.md) : conventions sourcées, identifiants, inventaire des pages wiki et ETags, observations historiques et points ouverts.
@@ -315,11 +460,11 @@ Observation historique de la passation précédente : Maxime, le guide, le modè
 
 Le dernier `git diff --check` des changements de configuration était réussi. L'activation effective de la configuration mise à jour de Maxime dans une nouvelle conversation VS Code reste à vérifier ; un ancien contexte de conversation ne prouve pas que les nouveaux droits ont été chargés.
 
-## Prochaines étapes
+## Prochaines étapes (historique 26-27/10)
 
 L'utilisateur confirme le 2026-10-26 que les trois premiers points de la passation précédente sont validés : le fonctionnement de Maxime/ADO, la reprise de l'affinage et le fonctionnement de la création et de la modification. Il confirme que Maxime alimente bien les commentaires avec les derniers inputs. Il s'agit d'une validation utilisateur, sans nouvelle vérification ADO dans cette session.
 
-Mise à jour du 27/10 : Joao a été reconnu et testé une fois en documentation (dépôt IEBOX). Voir « Reprise immédiate » en tête de fichier pour la suite ; les points ci-dessous restent valables pour les modes conception et ticket.
+Mise à jour du 27/10 : Joao a été reconnu et testé une fois en documentation (dépôt IEBOX). Voir « Point de reprise » en tête de fichier pour la suite ; les points ci-dessous restent valables pour les modes conception et ticket.
 
 1. Vérifier dans une nouvelle conversation VS Code que Joao est reconnu et peut être invoqué par l'utilisateur ; tester séparément l'analyse d'une architecture existante, la conception à partir d'un besoin/ticket et la lecture d'un ticket ADO explicitement identifié.
 2. Vérifier que Joao produit ou met à jour uniquement `ARCHITECTURE.md` et les ADR concernés, respecte le nommage OMA/séquence, demande les informations absentes et ne présente pas une proposition comme une décision acceptée.

@@ -1,5 +1,5 @@
-# Hook PostToolUse : impose l'appel à Antoine quand un livrable d'architecture
-# (ARCHITECTURE.md ou fichier ADR*.md) contient un mot-clé de sécurité.
+# Hook postToolUse : rappelle l'appel a Antoine quand un livrable d'architecture
+# (ARCHITECTURE.md, fichier ADR*.md ou contexte-technique.md) contient un mot-cle de securite.
 $ErrorActionPreference = 'Stop'
 
 function Normalize([string]$text) {
@@ -36,14 +36,20 @@ function Get-LocalFile([string]$path, [string]$root) {
 }
 
 $keywords = @('base de donnees', 'api externe', 'authentification', 'donnees personnelles')
-$documentPattern = '(?i)(^|[\\/])(ARCHITECTURE\.md|ADR[^\\/\r\n]*\.md|[a-z][a-z0-9]*-\d{3}(?:[ -][^\\/\r\n]*)?\.md)$'
+$documentPattern = '(?i)(^|[\\/])(ARCHITECTURE\.md|ADR[^\\/\r\n]*\.md|contexte-technique\.md|[a-z][a-z0-9]*-\d{3}(?:[ -][^\\/\r\n]*)?\.md)$'
 
 try {
     $payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
     $root = [IO.Path]::GetFullPath($(if ($payload.cwd) { $payload.cwd } else { (Get-Location).Path }))
     $root = $root.TrimEnd([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
 
-    $candidates = foreach ($s in (Get-Strings $payload.tool_input)) {
+    # Harness Copilot (postToolUse) : toolArgs ; format compatible VS Code / Local : tool_input.
+    $toolArgs = if ($null -ne $payload.toolArgs) { $payload.toolArgs } else { $payload.tool_input }
+    if ($toolArgs -is [string] -and $toolArgs.TrimStart().StartsWith('{')) {
+        try { $toolArgs = $toolArgs | ConvertFrom-Json } catch { }
+    }
+
+    $candidates = foreach ($s in (Get-Strings $toolArgs)) {
         if ($s.Trim() -match $documentPattern) { $s.Trim() }
         foreach ($m in [regex]::Matches($s, '(?im)^\*\*\* (?:Add|Update) File: (.+)$')) {
             $p = $m.Groups[1].Value.Trim()
@@ -82,7 +88,8 @@ try {
         # Texte en escapes Unicode : PowerShell 5.1 lit ce fichier en ANSI.
         $action = [regex]::Unescape(" Appelle maintenant l'agent Antoine. En documentation de l'existant, demande une revue de s\u00e9curit\u00e9 du d\u00e9p\u00f4t ; garde la section S\u00e9curit\u00e9 descriptive et renvoie uniquement vers son rapport SECURITY_REVIEW.MD, sans recopier ses constats ou son avis. En conception ou en challenge, demande un avis cibl\u00e9 ; r\u00e9f\u00e9rence son rapport s'il en a produit un, ou ajoute la ligne \u00ab Avis de s\u00e9curit\u00e9 d'Antoine : \u00bb suivie de son avis cibl\u00e9. Ne pr\u00e9sente jamais un rapport comme disponible ni un avis comme obtenu sans l'avoir v\u00e9rifi\u00e9 ; si le relais \u00e9choue, signale-le dans le chat.")
         $reason = ($reasons -join ' ') + $action
-        @{ decision = 'block'; reason = $reason } | ConvertTo-Json -Compress
+        # additionalContext : sortie lue par le harness Copilot ; decision/reason : format Local.
+        @{ additionalContext = $reason; decision = 'block'; reason = $reason } | ConvertTo-Json -Compress
     }
     exit 0
 }

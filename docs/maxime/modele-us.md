@@ -1,18 +1,20 @@
-# Modèle de PBI Support Request
+# Modèle de besoin
 
-Ce modèle définit les rubriques demandées par l'utilisateur. Les conventions complémentaires vérifiées sont résumées dans `references.md`. Les éléments entre crochets sont des emplacements à renseigner, jamais du contenu à publier tel quel.
+Ce modèle définit les rubriques d'un besoin, quel que soit le mode de suivi : ticket ADO ou section `FCT-NNN` de `ANALYSE.md` (voir `modele-analyse.md`). Les éléments entre crochets sont des emplacements à renseigner, jamais du contenu à publier tel quel.
 
 ## Le titre
 
-`[Code OMA][NNN].[NN] - [Fonctionnalité apportée]`
+Le titre suit la convention définie dans `PROJET.md`. En mode local, il est précédé de l'identifiant `FCT-NNN`.
 
-Format confirmé par l'utilisateur : code OMA suivi de trois chiffres, d'un point et de deux chiffres, par exemple `LDC001.01 - [Titre de la User Story]`. LDC est un exemple, pas une application imposée. La signification et l'incrémentation des deux nombres restent non définies : utiliser un numéro fourni ou demander avant création. Vérifier les doublons en direct.
+En contexte Forem, le format confirmé par l'utilisateur est `[Code OMA][NNN].[NN] - [Fonctionnalité apportée]`, par exemple `LDC001.01 - [Titre]`. LDC est un exemple, pas une application imposée. La signification et l'incrémentation des deux nombres restent non définies : utiliser un numéro fourni ou demander avant création. Vérifier les doublons en direct. Les conventions Forem vérifiées sont résumées dans `references.md`.
 
 ## Champs ADO
 
-Utiliser uniquement le type `Support Request`, dans `Tools Backlogs\Squads\Prague`, après vérification de sa disponibilité et de ses champs. Ce libellé a été confirmé par l'utilisateur après le refus ADO de `Service Request`. Ne pas remplacer ce type par `User story`, `Service Request` ou `Issue` s'il est absent. Utiliser `System.Title` pour le titre, `System.Description` pour les seules rubriques décrites dans la section suivante et `Microsoft.VSTS.Common.AcceptanceCriteria` pour les scénarios d'acceptation. Vérifier ses formats avant publication ; les métadonnées de `User story` ne prouvent pas celles de `Support Request`.
+En mode ADO, utiliser le type de work item défini dans `PROJET.md`, après vérification de sa disponibilité et de ses champs. Les rubriques ci-dessous vont dans le champ de description ; les scénarios d'acceptation vont dans le champ dédié aux critères d'acceptation, jamais dans la description. Vérifier les formats avant publication.
 
-## Contenu du champ Description
+En contexte Forem : type `Support Request` uniquement, dans `Tools Backlogs\Squads\Prague`. Ce libellé a été confirmé par l'utilisateur après le refus ADO de `Service Request` ; ne pas le remplacer par `User story`, `Service Request` ou `Issue` s'il est absent. Champs : `System.Title`, `System.Description` et `Microsoft.VSTS.Common.AcceptanceCriteria`. Les métadonnées de `User story` ne prouvent pas celles de `Support Request`.
+
+## Contenu de la description
 
 ### Expression du besoin
 
@@ -38,14 +40,14 @@ Ne pas publier dans la description la grille INVEST, une section « Critères d'
 
 ### Éléments facultatifs
 
-Ces consignes ne sont pas des rubriques à copier dans le ticket :
+Ces consignes ne sont pas des rubriques à copier dans le besoin :
 
-- Maquette d'écran : mentionner uniquement celle fournie dans le besoin initial. Sinon, ne pas créer la rubrique et ne pas demander de maquette par défaut.
-- Diagrammes : ADO n'affichant pas le rendu Mermaid dans les tickets, ne pas y publier de blocs source Mermaid et ne pas solliciter `UMLCreator` pour rédiger un PBI. Si un flux doit être expliqué dans le ticket, le décrire en texte clair, sans ajouter de rubrique « Diagrammes » vide. Les diagrammes Mermaid peuvent être produits séparément, hors du PBI, à la demande de l'utilisateur ou d'un agent autorisé.
+- Maquette d'écran : mentionner uniquement celle fournie dans le besoin initial ou produite par Simone pour ce besoin, en donnant seulement son chemin ou son lien. Sinon, ne pas créer la rubrique et ne pas demander de maquette par défaut.
+- Diagrammes : ne pas solliciter `UMLCreator` pour rédiger un besoin. En mode ADO, les tickets n'affichant pas le rendu Mermaid, ne pas y publier de blocs source Mermaid. Si un flux doit être expliqué dans le besoin, le décrire en texte clair, sans ajouter de rubrique « Diagrammes » vide. Les diagrammes Mermaid peuvent être produits séparément, hors du besoin, à la demande de l'utilisateur ou d'un agent autorisé.
 
-## Contenu du champ Acceptance Criteria
+## Contenu des critères d'acceptation
 
-Ce contenu est publié uniquement dans le champ dédié, jamais dans Description. Lors d'une correction qui ne vise que la description ou la discussion, conserver les critères existants sans modification.
+En mode ADO, ce contenu est publié uniquement dans le champ dédié, jamais dans la description. En mode local, il forme la rubrique « Critères d'acceptation » du besoin. Lors d'une correction qui ne vise que la description ou la discussion, conserver les critères existants sans modification.
 
 ### CA-01 : [Résultat métier vérifiable]
 
@@ -55,6 +57,6 @@ Ce contenu est publié uniquement dans le champ dédié, jamais dans Description
 
 [Ajouter les scénarios pertinents, notamment limites et erreurs, après clarification des résultats attendus.]
 
-## Discussion du ticket
+## Discussion
 
-Utiliser un ton naturel et des paragraphes courts. Regrouper les questions en trois sujets au maximum : titre explicite, question principale, puis puces pour les précisions. Le premier commentaire peut commencer par « Affinage initial : 3 questions avant de continuer », un bref « Contexte confirmé » et les propositions « À confirmer ». Adapter le nombre réel de sujets et éviter les rappels de procédure répétitifs. Écrire `**Libellé** :` pour les libellés en gras dans ADO.
+En mode ADO, la discussion du ticket porte les questions. En mode local, la rubrique « Questions et réponses » de `ANALYSE.md` la remplace. Utiliser un ton naturel et des paragraphes courts. Regrouper les questions en trois sujets au maximum : titre explicite, question principale, puis puces pour les précisions. Le premier commentaire peut commencer par « Affinage initial : 3 questions avant de continuer », un bref « Contexte confirmé » et les propositions « À confirmer ». Adapter le nombre réel de sujets et éviter les rappels de procédure répétitifs. Écrire `**Libellé** :` pour les libellés en gras dans ADO.
