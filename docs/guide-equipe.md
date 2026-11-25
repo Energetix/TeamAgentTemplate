@@ -2,6 +2,8 @@
 
 Template d'agents GitHub Copilot pour VS Code, utilisable en contexte Forem ou sur tout autre projet. Le contexte et les modes de chaque projet sont décrits dans `PROJET.md` (voir « Configuration du projet et modes de suivi »).
 
+L'objectif est une **dark factory** : une équipe d'agents qui enchaîne les étapes du processus en autonomie, orchestrée par Philippe, et ne sollicite l'utilisateur que pour les validations humaines obligatoires et les questions qu'aucun agent ne peut trancher (voir « Processus de l'équipe »).
+
 ## Style commun
 
 Tous les agents écrivent dans un français simple, naturel et direct, comme un collègue qui explique un sujet à l'équipe. Cette règle couvre aussi les tickets, commentaires et livrables : phrases courtes, mots courants, paragraphes aérés, sans jargon inutile ni répétitions. Les détails utiles et les rubriques obligatoires restent présents. Les règles complètes figurent dans [.github/copilot-instructions.md](../.github/copilot-instructions.md).
@@ -128,7 +130,7 @@ L'appelant transmet un contexte confirmé et un objectif délimité, puis relit 
 
 ## Processus de l'équipe
 
-Processus cible décidé par l'utilisateur le 2026-11-23. Maxime, Simone, Joao et Antoine y sont adaptés ; Sébastien, Anne-Cécile, Vincent, Léo et Philippe n'existent pas encore. L'utilisateur est le PO. Un besoin est un ticket ADO ou une section `FCT-NNN` de `ANALYSE.md`, selon le mode de suivi de `PROJET.md`.
+Processus cible de la dark factory, décidé par l'utilisateur le 2026-11-23. Maxime, Simone, Joao et Antoine y sont adaptés ; Sébastien, Anne-Cécile, Vincent, Léo et Philippe n'existent pas encore. L'utilisateur est le PO. Un besoin est un ticket ADO ou une section `FCT-NNN` de `ANALYSE.md`, selon le mode de suivi de `PROJET.md`.
 
 | Étape | Agent | Entrées | Résultat | Suite |
 | --- | --- | --- | --- | --- |

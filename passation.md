@@ -1,12 +1,12 @@
 # Passation de la conversation
 
-## Point de reprise — 2026-11-23 16:00
+## Point de reprise — 2026-11-25
 
 À lire en premier dans une nouvelle session. Ce bloc est l'état courant ; tout ce qui suit est un journal historique. En cas d'écart, ce bloc, les fichiers d'agents et `docs/guide-equipe.md` font foi.
 
 ### Objectif
 
-Construire une équipe d'agents GitHub Copilot pour VS Code (template à copier dans un dépôt), utilisable en contexte Forem ou sur un projet personnel. L'utilisateur est le PO. À terme, les agents enchaînent les étapes en autonomie, orchestrés par Philippe, et ne remontent à l'utilisateur que les validations obligatoires et les questions qu'aucun agent ne peut trancher.
+Construire une équipe d'agents GitHub Copilot pour VS Code (template à copier dans un dépôt), utilisable en contexte Forem ou sur un projet personnel. L'utilisateur est le PO. À terme, les agents enchaînent les étapes en autonomie, orchestrés par Philippe, et ne remontent à l'utilisateur que les validations obligatoires et les questions qu'aucun agent ne peut trancher. L'utilisateur nomme cet objectif la **dark factory** (terme adopté le 25/11 dans le guide et ici).
 
 ### Agents
 
@@ -38,7 +38,7 @@ Avant de concevoir Sébastien. Rien n'est encore lancé.
 5. **Antoine** : doit être appelé si la fonctionnalité touche à l'authentification ou aux données personnelles ; vérifier le déclenchement réel du hook (rappel `additionalContext`).
 6. Relever les écarts, corriger agents et guide, puis mettre à jour ce bloc.
 
-L'utilisateur a proposé de lancer le test lui-même ; l'assistant peut préparer les prompts de chaque étape s'il le demande.
+L'utilisateur lance le test lui-même. Le 25/11, l'assistant a préparé le protocole (prompts, réponses à donner, points de contrôle, `git status` après chaque étape, une conversation par étape, test isolé du hook) dans un fichier de session hors dépôt : `test-local-dark-factory.md`. Projet de test proposé : « Liste de tâches », code `TDL`, suivi Local, wiki Aucun. Point à observer, non tranché par les règles actuelles : Maxime intègre-t-il directement les critères UX de Simone dans un besoin déjà `Validé par le PO`, ou demande-t-il un arbitrage ? Résultat du test : non connu à ce jour.
 
 ### Décisions et points encore ouverts
 
@@ -47,7 +47,7 @@ L'utilisateur a proposé de lancer le test lui-même ; l'assistant peut prépare
 - **Ordre de travail proposé, non validé** : Sébastien, Anne-Cécile, Vincent, puis Léo et Philippe (Philippe n'est créé qu'une fois les trois premiers disponibles : décision utilisateur).
 - **Toujours en attente** : appel d'Antoine systématique en mode documentation, ou seulement pour les dépôts avec dépendances externes au SI.
 - **Contexte Forem** : type, zone et convention de titre des bugs ADO à renseigner dans `PROJET.md` ; libellés exacts des modèles à vérifier dans le sélecteur VS Code.
-- **Avant tout commit** : rien n'est commité ; `README.md` apparaissait vide le 26/10, à vérifier avec l'utilisateur. Fichiers nouveaux non suivis : `simone.agent.md`, `modele-projet.md`, `modele-analyse.md`. `route-securite.json` a été migré au format Copilot hors des interventions de l'assistant.
+- **Git** (vérifié le 25/11) : tout est commité jusqu'à `36e60da` sur la branche `add_joao`, y compris Simone et les modèles de Maxime. `README.md` a été vidé au commit `df21014` puis retiré du dépôt : point clos. `route-securite.json` a été migré au format Copilot hors des interventions de l'assistant.
 - **Wiki CRM (hors template)** : contradictions signalées sur Dossiers Représentation (recalcul §3 vs §4 ; statut vs cases non cochées) et Service Opérationnel (Gufid des autres codes Gestion Accès, usage des recherches PCU) à faire arbitrer par le PO. Dernier `etag` constaté de Service Opérationnel : `adeee7f948be111bce478c6f40699559a7d4785d` (modifiée par un tiers après le 19/11).
 
 ### Méthode de travail attendue par l'utilisateur
