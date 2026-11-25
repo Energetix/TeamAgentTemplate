@@ -21,15 +21,25 @@ Construire une équipe d'agents GitHub Copilot pour VS Code (template à copier 
 
 ### Fichiers clés
 
-- `.github/copilot-instructions.md` : règles communes, dont « Configuration du projet » (`PROJET.md` lu par tous, écrit par Maxime seul) et « Autonomie et remontée des questions » (libellé « À remonter à l'utilisateur », pas de rappel de l'appelant).
+- `.github/copilot-instructions.md` : règles communes, dont « Configuration du projet » (`PROJET.md` lu par tous, écrit par Maxime seul, rubrique « Cadre technique »), « Source unique et identifiants » (tableau des sources, `RM`/`CA`/`UX`/`Q`/`RI`/`P`/`SEC`) et « Autonomie et remontée des questions » (libellé « À remonter à l'utilisateur », pas de rappel de l'appelant).
 - `docs/guide-equipe.md` : référence fonctionnelle (rôles, processus, Philippe, Léo, modes de suivi, harnesses, hook, installation, points ouverts).
-- `docs/maxime/` : `modele-projet.md` (modèle de `PROJET.md` + exemple Forem), `modele-analyse.md` (modèle de `ANALYSE.md`), `modele-us.md` (rubriques d'un besoin), `references.md` (cache Forem uniquement).
+- `docs/maxime/` : `modele-projet.md` (modèle de `PROJET.md` + exemple Forem), `modele-analyse.md` (modèle de `ANALYSE.md`), `modele-us.md` (rubriques d'un besoin), `forem.md` (règles et cache Forem, lus seulement en contexte Forem), `references.md` (cache Forem uniquement).
+- Fichiers lus à la demande depuis le 25/11 : `docs/commun/publication-wiki-ado.md` (Maxime, Simone, Joao), `docs/joao/` (`modele-architecture.md`, `modele-adr.md`, `forem.md`), `docs/antoine/revue-depot.md`.
 - `.github/hooks/route-securite.json` + `scripts/route-securite.ps1` : rappel vers Antoine si `ARCHITECTURE.md`, `ADR*.md` ou `contexte-technique.md` contient « Base de données », « API externe », « Authentification » ou « Données personnelles ».
 - `.vscode/mcp.json` : serveur MCP distant `ado` (`https://mcp.dev.azure.com/leforem`), outils listés dans `X-MCP-Tools`, dont `wiki_upsert_page`.
 
-### Prochaine étape décidée : test sur un petit projet local
+### Test local du 25/11 : fait en mode sous-agent
 
-Avant de concevoir Sébastien. Rien n'est encore lancé.
+Lancé par l'assistant à la demande de l'utilisateur, dans le rôle de Philippe : chaque agent est appelé comme sous-agent (outil `task`) ; l'utilisateur a répondu, comme PO, à toutes les questions et validations relayées. Projet : `C:\Users\brgfrn1\source\repos\test-dark-factory` (hors dépôt, commits `Étape 1` à `Étape 4`), « Liste de tâches », code `TDL`, suivi Local, wiki Local. Bilan complet dans le fichier de session `bilan-test-local.md` ; synthèse :
+
+- **Résultat** : FCT-001 prêt pour le développement (besoins validés, Q-01 à Q-18 répondues, charte et maquette validées, `ARCHITECTURE.md`, ADR TDL-001 à TDL-004 acceptés, contexte technique sans point ouvert, avis de conception d'Antoine). Aucun agent n'a écrit hors de son périmètre ni rappelé son appelant.
+- **Point à observer tranché** : Maxime n'intègre pas directement des critères UX qui ajoutent des comportements à un besoin validé ; il les marque « proposés » et demande la validation du PO. Il laisse le statut `Validé par le PO` malgré des questions ouvertes (cas non prévu par les règles).
+- **Écarts sur les agents** : Joao fixe la pile technique et suppose l'hébergement avant de demander ; Simone liste ses questions pour Maxime et Joao au lieu de les leur poser, et modifie sa maquette validée sans nouvelle validation ; relectures incomplètes signalées par Maxime puis Simone ; numérotation R-xx/RI-xx divergente ; doublons entre critères métier (CA) et UX ; quatre design systems au lieu de deux ou trois ; sévérités HIGH/MEDIUM d'Antoine sur des points de conception.
+- **Leçons pour Philippe et Léo** : un sous-agent synchrone ne reçoit pas de suite (appeler en arrière-plan ou rappeler avec tout le contexte) ; 4 allers-retours avec le PO pour l'architecture, faute de regroupement des questions et de seuil pour les détails ; incohérence finale maquette / `ANALYSE.md` (Q-18) et agents ignorant l'état des autres ; règle « une fonctionnalité à la fois » inconnue des agents.
+- **Limites d'environnement** : les sous-agents de cette session ne créent pas de dossier (dossiers créés par l'orchestrateur ; comportement de VS Code non vérifié) ; hook non vérifiable (pas d'accès aux journaux, chemins hors dépôt refusés par le script).
+- **Reste à tester** : hook dans VS Code (étape 5b du protocole) ; dialogue direct avec un agent choisi dans le chat.
+
+Protocole initial, conservé pour mémoire (prévu pour être lancé par l'utilisateur, une conversation par étape) :
 
 1. Créer un nouveau dossier (petite application Web, par exemple une liste de tâches), l'ouvrir comme espace de travail VS Code, harness Copilot. Y copier `.github/` et `docs/`, sans `.vscode/mcp.json`, `PROJET.md` ni `ANALYSE.md`.
 2. **Maxime** : créer `PROJET.md` (contexte Autre, suivi Local, wiki Aucun), puis `ANALYSE.md` avec `FCT-001` ; vérifier découpage, questions et réponses, validation du PO, statut `Validé par le PO`.
@@ -38,7 +48,18 @@ Avant de concevoir Sébastien. Rien n'est encore lancé.
 5. **Antoine** : doit être appelé si la fonctionnalité touche à l'authentification ou aux données personnelles ; vérifier le déclenchement réel du hook (rappel `additionalContext`).
 6. Relever les écarts, corriger agents et guide, puis mettre à jour ce bloc.
 
-L'utilisateur lance le test lui-même. Le 25/11, l'assistant a préparé le protocole (prompts, réponses à donner, points de contrôle, `git status` après chaque étape, une conversation par étape, test isolé du hook) dans un fichier de session hors dépôt : `test-local-dark-factory.md`. Projet de test proposé : « Liste de tâches », code `TDL`, suivi Local, wiki Aucun. Point à observer, non tranché par les règles actuelles : Maxime intègre-t-il directement les critères UX de Simone dans un besoin déjà `Validé par le PO`, ou demande-t-il un arbitrage ? Résultat du test : non connu à ce jour.
+Le protocole détaillé (prompts, points de contrôle, test isolé du hook) est dans le fichier de session `test-local-dark-factory.md`.
+
+### Ajustements du 25/11 après le test
+
+Constat de l'utilisateur : trop de questions remontées au PO hors affinage, et une consommation excessive pour une tâche simple. Mesure : environ 27 M de tokens en entrée (85 à 93 % lus depuis le cache), dont près de 60 % pour l'orchestrateur, qui avait tout lu. Sur 13 ajustements proposés (A à M), l'utilisateur a retenu B, C, G, H, J, L et M ; le détail est dans `docs/guide-equipe.md`, « Adaptations du 2026-11-25 ».
+
+- **Appliqués** : liste de cas limites avec valeurs par défaut pour Maxime (B) ; rubrique « Cadre technique » dans `PROJET.md`, validée avant la conception (C) ; source unique et identifiants dans les règles communes (G) ; ADR « socle technique », contexte technique court, consultation légère d'Antoine (H) ; règles déplacées dans des fichiers lus à la demande `docs/commun/`, `docs/maxime/forem.md`, `docs/joao/`, `docs/antoine/` (J) ; orchestration économe pour Philippe (L) et contrôle léger pour Léo (M), dans le guide.
+- **Non retenus** : droit de trancher les détails réversibles (A), trois validations groupées (D), questions groupées par étape au niveau des agents (E), statut « En révision » (F), un fichier par besoin (I), changement de modèles (K). Les écarts correspondants du bilan restent ouverts : modification par Simone d'une maquette validée, statut d'un besoin validé avec des questions ouvertes.
+- **Non vérifié** : l'effet réel sur les tokens et les allers-retours ; l'utilisateur n'a pas demandé de relancer le test. Le projet `test-dark-factory` a été produit avec les anciennes consignes.
+- **Relecture indépendante** (agent rubber-duck) : aucune règle perdue ; quatre écarts corrigés (source des `SEC-xx` d'une consultation de besoin, ligne de renvoi dans `ARCHITECTURE.md` et les ADR pour le hook, règles de la consultation normale d'Antoine, guide qui prescrivait encore la copie des règles d'interface).
+- **Hook corrigé** : la ligne « Avis de sécurité d'Antoine : » n'était jamais reconnue dans un fichier en CRLF (défaut antérieur) ; expression régulière corrigée dans `route-securite.ps1`, 6 cas simulés vérifiés. Le déclenchement réel dans VS Code reste à tester.
+- **Prochaine étape** : concevoir Sébastien, sauf nouvelle demande.
 
 ### Décisions et points encore ouverts
 

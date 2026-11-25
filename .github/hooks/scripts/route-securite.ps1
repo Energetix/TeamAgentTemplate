@@ -68,7 +68,7 @@ try {
         if (-not $found) { continue }
 
         $folder = Split-Path -Parent $full
-        $hasReviewTrace = $normalized.Replace([string][char]0x2019, "'") -match "(?m)^[ \t]*(?:[-*][ \t]+)?avis de securite d'antoine[ \t]*:[ \t]*\S[^\r\n]*$"
+        $hasReviewTrace = $normalized.Replace([string][char]0x2019, "'") -match "(?m)^[ \t]*(?:[-*][ \t]+)?avis de securite d'antoine[ \t]*:[ \t]*\S[^\r\n]*\r?$"
         if ($normalized.Contains('security_review.md')) {
             $reportPaths = @((Join-Path $root 'SECURITY_REVIEW.MD'), (Join-Path $folder 'SECURITY_REVIEW.MD')) | Select-Object -Unique
             foreach ($reportPath in $reportPaths) {

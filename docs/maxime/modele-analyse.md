@@ -39,7 +39,7 @@ En tant que [rôle utilisateur], je souhaite [besoin], afin de [valeur métier].
 
 ### Maquette
 
-[Chemin de la maquette de Simone, par exemple `docs/ux/FCT-001/`. Supprimer la rubrique s'il n'y en a pas.]
+Maquette : [chemin de la maquette de Simone, par exemple `docs/ux/FCT-001/`]. Les règles d'interface (`RI-xx`) et les textes d'interface y restent ; ne pas les recopier ici. Supprimer la rubrique s'il n'y a pas de maquette.
 
 ### Critères d'acceptation
 
@@ -48,6 +48,16 @@ En tant que [rôle utilisateur], je souhaite [besoin], afin de [valeur métier].
 - Étant donné [contexte et préconditions],
 - Lorsque [action ou événement],
 - Alors [résultat observable attendu].
+
+### Critères UX
+
+Proposés par Simone, intégrés par Maxime. Supprimer la rubrique s'il n'y en a pas.
+
+#### UX-01 : [Détail d'interface vérifiable] (complète CA-01)
+
+- Étant donné [contexte],
+- Lorsque [action],
+- Alors [résultat observable à l'écran].
 
 ### Questions et réponses
 

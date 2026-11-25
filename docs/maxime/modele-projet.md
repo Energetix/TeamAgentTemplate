@@ -15,6 +15,20 @@ Maxime crée `PROJET.md` à la racine du dépôt cible avec l'utilisateur, à pa
 | Mode de suivi | [ADO ou Local] |
 | Mode de wiki | [ADO, Local ou Aucun] |
 
+## Cadre technique
+
+Une valeur inconnue s'écrit « À proposer par Joao » : Joao la propose et la fait valider avant de concevoir.
+
+| Paramètre | Valeur |
+| --- | --- |
+| Pile technique | [Langages, frameworks, bibliothèque d'interface] |
+| Hébergement et exécution | [Poste local, serveur interne, cloud…] |
+| Exposition réseau et authentification | [Locale seulement, réseau interne, Internet ; mécanisme d'authentification] |
+| Données sensibles | [Aucune, données personnelles, données métier sensibles] |
+| Dossier des ADR | [Par exemple `docs/adr/`] |
+| Navigateurs ou plateformes visés | [Liste] |
+| Contraintes imposées | [Normes, outils ou services obligatoires] |
+
 ## Suivi ADO
 
 À renseigner si le mode de suivi est ADO.

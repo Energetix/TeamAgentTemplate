@@ -22,12 +22,32 @@
 
 ## Configuration du projet
 
-- `PROJET.md`, à la racine du dépôt, décrit le projet : contexte (`Forem` ou `Autre`), code application, mode de suivi (`ADO` ou `Local`), mode de wiki (`ADO`, `Local` ou `Aucun`) et, s'il y a lieu, les valeurs de connexion ADO. Tous les agents le lisent au début de leur travail.
+- `PROJET.md`, à la racine du dépôt, décrit le projet : contexte (`Forem` ou `Autre`), code application, mode de suivi (`ADO` ou `Local`), mode de wiki (`ADO`, `Local` ou `Aucun`), cadre technique et, s'il y a lieu, les valeurs de connexion ADO. Tous les agents le lisent au début de leur travail.
+- **Cadre technique** : la rubrique « Cadre technique » de `PROJET.md` (pile, hébergement et exécution, dossier des ADR, navigateurs ou plateformes, contraintes imposées) est la référence technique du projet. Une valeur « À proposer par Joao » signifie que Joao la propose et la fait valider avant de concevoir ; personne ne la suppose. Maxime reporte les valeurs validées.
 - Seul Maxime crée et modifie `PROJET.md`, avec l'utilisateur. S'il est absent ou incomplet pour ton travail, ne suppose aucun mode ni aucune valeur : demande à Maxime de le compléter ou remonte la question à l'utilisateur.
 - **Besoins et bugs** : en mode de suivi `ADO`, ils sont dans les tickets ADO ; en mode `Local`, dans `ANALYSE.md` à la racine (besoins `FCT-NNN`, section « Suivi des bugs » `BUG-NNN`). Seul Maxime y écrit. L'identifiant du besoin (numéro de ticket ou `FCT-NNN`) sert aussi à ranger les livrables, par exemple `docs/ux/<ID>/`.
-- **Publication** : en mode de wiki `ADO`, dans le wiki indiqué par `PROJET.md` ou par l'utilisateur, sauf règle propre à l'agent (Joao en contexte Forem utilise le portefeuille indiqué par l'utilisateur) ; en mode `Local`, dans le dossier indiqué par `PROJET.md` ; en mode `Aucun`, ne rien publier et le signaler.
+- **Publication** : en mode de wiki `ADO`, dans le wiki indiqué par `PROJET.md` ou par l'utilisateur, sauf règle propre à l'agent (Joao en contexte Forem utilise le portefeuille indiqué par l'utilisateur), selon la procédure de `docs/commun/publication-wiki-ado.md` ; en mode `Local`, dans le dossier indiqué par `PROJET.md` ; en mode `Aucun`, ne rien publier et le signaler.
 - **Indisponibilité** : si ADO est configuré mais indisponible, ne bascule pas en local ; signale le blocage et remonte-le. Un changement de mode se fait uniquement sur demande de l'utilisateur, par Maxime.
-- Les règles et sources propres au Forem ne s'appliquent que si `PROJET.md` indique le contexte `Forem`.
+- Les règles et sources propres au Forem ne s'appliquent que si `PROJET.md` indique le contexte `Forem`. Elles sont dans des fichiers lus à la demande (`docs/maxime/forem.md`, `docs/joao/forem.md`).
+
+## Source unique et identifiants
+
+Chaque information a une seule source. Les autres livrables la citent par son identifiant ou son chemin, sans la recopier ni la reformuler. Une décision modifiée n'est mise à jour que dans sa source.
+
+| Information | Source | Rédacteur | Identifiants |
+| --- | --- | --- | --- |
+| Configuration et cadre technique | `PROJET.md` | Maxime | — |
+| Règles métier, critères d'acceptation, critères UX, questions et réponses | Besoin (ticket ADO ou section `FCT-NNN`) | Maxime ; critères UX proposés par Simone | `RM-xx`, `CA-xx`, `UX-xx`, `Q-xx` |
+| Charte graphique | `docs/ux/charte.md` | Simone | — |
+| Parcours, maquette, règles et textes d'interface | `docs/ux/<ID>/` | Simone | `RI-xx` |
+| Architecture du projet | `ARCHITECTURE.md` | Joao | — |
+| Décisions d'architecture | ADR | Joao | `[Code]-NNN` |
+| Contexte technique et points ouverts techniques d'une fonctionnalité | `docs/fonctionnalites/<ID>/contexte-technique.md` | Joao | `P-xx` |
+| Exigences de sécurité | `SECURITY_REVIEW.MD` ; sans rapport, avis d'Antoine consigné par l'agent qui l'a consulté : Maxime dans le besoin, Joao dans le contexte technique | Antoine | `SEC-xx` |
+
+- Les identifiants `xx` sont numérotés sur deux chiffres dans le périmètre du besoin (ou de l'avis pour `SEC-xx`). Ils ne sont jamais renumérotés ni réutilisés.
+- Un comportement, un critère. Un `CA-xx` décrit le résultat métier ; un `UX-xx` ne décrit que le détail d'interface et cite le `CA-xx` qu'il complète, s'il existe.
+- `ARCHITECTURE.md`, les ADR et le contexte technique ne contiennent pas de règle métier ni de texte d'interface : ils les citent.
 
 ## Autonomie et remontée des questions
 

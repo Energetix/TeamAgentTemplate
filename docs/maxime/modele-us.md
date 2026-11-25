@@ -42,7 +42,7 @@ Ne pas publier dans la description la grille INVEST, une section « Critères d'
 
 Ces consignes ne sont pas des rubriques à copier dans le besoin :
 
-- Maquette d'écran : mentionner uniquement celle fournie dans le besoin initial ou produite par Simone pour ce besoin, en donnant seulement son chemin ou son lien. Sinon, ne pas créer la rubrique et ne pas demander de maquette par défaut.
+- Maquette d'écran : mentionner uniquement celle fournie dans le besoin initial ou produite par Simone pour ce besoin, en donnant seulement son chemin ou son lien. Ses règles d'interface (`RI-xx`) et ses textes d'interface restent dans la maquette, sans être recopiés. Sinon, ne pas créer la rubrique et ne pas demander de maquette par défaut.
 - Diagrammes : ne pas solliciter `UMLCreator` pour rédiger un besoin. En mode ADO, les tickets n'affichant pas le rendu Mermaid, ne pas y publier de blocs source Mermaid. Si un flux doit être expliqué dans le besoin, le décrire en texte clair, sans ajouter de rubrique « Diagrammes » vide. Les diagrammes Mermaid peuvent être produits séparément, hors du besoin, à la demande de l'utilisateur ou d'un agent autorisé.
 
 ## Contenu des critères d'acceptation
@@ -55,7 +55,15 @@ En mode ADO, ce contenu est publié uniquement dans le champ dédié, jamais dan
 - Lorsque [action de l'utilisateur ou événement],
 - Alors [résultat observable attendu].
 
-[Ajouter les scénarios pertinents, notamment limites et erreurs, après clarification des résultats attendus.]
+[Ajouter les scénarios pertinents, notamment limites et erreurs, après clarification des résultats attendus. Un comportement, un critère.]
+
+### UX-01 : [Détail d'interface vérifiable] (complète CA-01)
+
+Critères UX proposés par Simone et intégrés par Maxime, à la suite des critères métier. Ils ne décrivent que le détail d'interface et citent le `CA-xx` qu'ils complètent, s'il existe.
+
+- Étant donné [contexte],
+- Lorsque [action],
+- Alors [résultat observable à l'écran].
 
 ## Discussion
 
